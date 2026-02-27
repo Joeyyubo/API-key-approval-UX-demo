@@ -13,6 +13,8 @@ import {
   MastheadContent,
   PageToggleButton,
   Button,
+  Flex,
+  FlexItem,
   Dropdown,
   DropdownList,
   DropdownItem,
@@ -166,14 +168,28 @@ const App = () => {
   const masthead = (
     <Masthead>
       <MastheadToggle>
-        <PageToggleButton
-          variant="plain"
-          aria-label="Global navigation"
-          isNavOpen={isNavOpen}
-          onNavToggle={onNavToggle}
-        >
-          <BarsIcon />
-        </PageToggleButton>
+        <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }}>
+          <PageToggleButton
+            variant="plain"
+            aria-label="Global navigation"
+            isNavOpen={isNavOpen}
+            onNavToggle={onNavToggle}
+          >
+            <BarsIcon />
+          </PageToggleButton>
+          <FlexItem>
+            <span
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                color: 'var(--pf-v5-global--Color--100)'
+              }}
+            >
+              proposal-B
+            </span>
+          </FlexItem>
+        </Flex>
       </MastheadToggle>
       
       <MastheadContent>
