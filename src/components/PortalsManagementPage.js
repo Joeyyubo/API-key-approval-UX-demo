@@ -40,8 +40,14 @@ const PortalsManagementPage = ({ onPortalClick }) => {
   };
 
   return (
-    <>
-      <PageSection variant="light">
+    <div
+      style={{
+        height: 'calc(100vh - 60px)',
+        backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)',
+        overflowY: 'auto'
+      }}
+    >
+      <PageSection variant="default">
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} alignItems={{ default: 'alignItemsFlexStart' }}>
           <FlexItem>
             <Title headingLevel="h1" size="2xl">Portals</Title>
@@ -55,13 +61,7 @@ const PortalsManagementPage = ({ onPortalClick }) => {
         </Flex>
       </PageSection>
 
-      <PageSection
-        style={{
-          height: 'calc(100vh - 280px)',
-          overflowY: 'auto',
-          backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)'
-        }}
-      >
+      <PageSection variant="default">
         <Grid hasGutter md={6} lg={4}>
           {PORTALS.map((portal) => (
             <GridItem key={portal.id}>
@@ -159,7 +159,7 @@ const PortalsManagementPage = ({ onPortalClick }) => {
           ))}
         </Grid>
       </PageSection>
-    </>
+    </div>
   );
 };
 

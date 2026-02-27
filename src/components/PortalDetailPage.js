@@ -11,7 +11,10 @@ import {
   DropdownItem,
   DropdownList,
   MenuToggle,
-  Icon
+  Icon,
+  Tabs,
+  Tab,
+  TabTitleText
 } from '@patternfly/react-core';
 import {
   Table,
@@ -54,6 +57,7 @@ const tableData = ROW_NAMES.map((name, i) => ({
 }));
 
 const PortalDetailPage = ({ portalName, onBack }) => {
+  const [activeTabKey, setActiveTabKey] = useState('overview');
   const [planPolicyOpen, setPlanPolicyOpen] = useState(false);
   const [lifecycleOpen, setLifecycleOpen] = useState(false);
   const [actionsOpenRowId, setActionsOpenRowId] = useState(null);
@@ -76,9 +80,6 @@ const PortalDetailPage = ({ portalName, onBack }) => {
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} alignItems={{ default: 'alignItemsFlexStart' }}>
           <FlexItem>
             <Title headingLevel="h1" size="2xl">{portalName}</Title>
-            <p style={{ marginTop: '8px', color: 'var(--pf-v5-global--Color--200)' }}>
-              Manage portal settings and configurations.
-            </p>
           </FlexItem>
           <FlexItem>
             <a
@@ -92,6 +93,17 @@ const PortalDetailPage = ({ portalName, onBack }) => {
             </a>
           </FlexItem>
         </Flex>
+        <Tabs
+          activeKey={activeTabKey}
+          onSelect={(e, tabKey) => setActiveTabKey(tabKey)}
+          style={{ marginTop: '24px' }}
+        >
+          <Tab eventKey="overview" title={<TabTitleText>Overview</TabTitleText>} />
+          <Tab eventKey="published-apis" title={<TabTitleText>Published APIs</TabTitleText>} />
+          <Tab eventKey="editor" title={<TabTitleText>Editor</TabTitleText>} />
+          <Tab eventKey="settings" title={<TabTitleText>Settings</TabTitleText>} />
+        </Tabs>
+        {activeTabKey === 'published-apis' && (
         <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapMd' }} style={{ marginTop: '24px' }}>
           <Dropdown
             isOpen={planPolicyOpen}
@@ -146,9 +158,16 @@ const PortalDetailPage = ({ portalName, onBack }) => {
             <Button variant="secondary">Import API</Button>
           </FlexItem>
         </Flex>
+        )}
       </PageSection>
 
       <PageSection>
+        {activeTabKey === 'overview' && (
+          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+            Overview of {portalName}. Summary and key metrics will appear here.
+          </p>
+        )}
+        {activeTabKey === 'published-apis' && (
         <Table aria-label={`${portalName} API products`}>
           <Thead>
             <Tr>
@@ -208,6 +227,17 @@ const PortalDetailPage = ({ portalName, onBack }) => {
             ))}
           </Tbody>
         </Table>
+        )}
+        {activeTabKey === 'editor' && (
+          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+            Editor for {portalName}. Configure portal content and layout here.
+          </p>
+        )}
+        {activeTabKey === 'settings' && (
+          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+            Settings for {portalName}. Manage portal configuration and preferences.
+          </p>
+        )}
       </PageSection>
     </>
   );

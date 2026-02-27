@@ -15,10 +15,6 @@ import {
   Button,
   Flex,
   FlexItem,
-  Dropdown,
-  DropdownList,
-  DropdownItem,
-  MenuToggle,
   Title
 } from '@patternfly/react-core';
 import {
@@ -43,6 +39,7 @@ import MCPServerDiscoveryPage from './components/MCPServerDiscoveryPage';
 import MCPServerTestConnectionPage from './components/MCPServerTestConnectionPage';
 import MCPServerLogsPage from './components/MCPServerLogsPage';
 import ObservabilityPage from './components/ObservabilityPage';
+import ConnectivityObservabilityPage from './components/ConnectivityObservabilityPage';
 import APIKeyApprovalsPage from './components/APIKeyApprovalsPage';
 import PortalPage from './components/PortalPage';
 import PortalsManagementPage from './components/PortalsManagementPage';
@@ -66,8 +63,6 @@ const App = () => {
   const [mcpServerPageType, setMcpServerPageType] = useState(null); // 'template', 'config', 'discovery'
   const [mcpServerAction, setMcpServerAction] = useState(null); // 'test-connection', 'view-logs'
   const [selectedMCPServer, setSelectedMCPServer] = useState(null);
-  const [userRole, setUserRole] = useState('api-consumer'); // 'api-consumer' | 'api-owner'
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const [selectedApiDetails, setSelectedApiDetails] = useState(null); // API name when viewing API details from Portal
   const [selectedPortal, setSelectedPortal] = useState(null); // portal name when API owner clicks a portal card
 
@@ -85,7 +80,7 @@ const App = () => {
 
   // Auto-expand Connectivity Link when any of its child items are active
   useEffect(() => {
-    if (['overview', 'policies', 'topology', 'api-products', 'api-key-approvals'].includes(activeItem)) {
+    if (['overview', 'policies', 'topology', 'connectivity-observability', 'api-products', 'api-key-approvals'].includes(activeItem)) {
       setIsKuadrantExpanded(true);
     }
   }, [activeItem]);
@@ -96,13 +91,6 @@ const App = () => {
       setIsInternalPortalExpanded(true);
     }
   }, [activeItem]);
-
-  // When switching to API consumer, if current page is owner-only, go to Portals first page
-  useEffect(() => {
-    if (userRole === 'api-consumer' && ['api-products', 'api-key-approvals'].includes(activeItem)) {
-      setActiveItem('internal-portals');
-    }
-  }, [userRole]);
 
   const handleGatewayNameClick = (gatewayName) => {
     setSelectedGateway(gatewayName);
@@ -211,36 +199,6 @@ const App = () => {
           <Button variant="plain" aria-label="Help" style={{ color: 'black' }}>
             <QuestionCircleIcon />
           </Button>
-          <Dropdown
-            isOpen={isRoleDropdownOpen}
-            onOpenChange={(open) => setIsRoleDropdownOpen(open)}
-            onSelect={() => setIsRoleDropdownOpen(false)}
-            toggle={(toggleRef) => (
-              <MenuToggle
-                ref={toggleRef}
-                onClick={() => setIsRoleDropdownOpen((prev) => !prev)}
-                isExpanded={isRoleDropdownOpen}
-                style={{ color: 'black', fontSize: '14px', fontWeight: '500' }}
-              >
-                {userRole === 'api-consumer' ? 'API consumer' : 'API owner'}
-              </MenuToggle>
-            )}
-          >
-            <DropdownList>
-              <DropdownItem
-                onClick={() => setUserRole('api-consumer')}
-                isSelected={userRole === 'api-consumer'}
-              >
-                API consumer
-              </DropdownItem>
-              <DropdownItem
-                onClick={() => setUserRole('api-owner')}
-                isSelected={userRole === 'api-owner'}
-              >
-                API owner
-              </DropdownItem>
-            </DropdownList>
-          </Dropdown>
         </div>
       </MastheadContent>
     </Masthead>
@@ -253,7 +211,7 @@ const App = () => {
           title="Connectivity Link"
             isExpanded={isKuadrantExpanded}
             onExpand={() => setIsKuadrantExpanded(!isKuadrantExpanded)}
-            isActive={['overview', 'policies', 'topology', 'api-products', 'api-key-approvals'].includes(activeItem)}
+            isActive={['overview', 'policies', 'topology', 'connectivity-observability', 'api-products', 'api-key-approvals'].includes(activeItem)}
           >
             <NavItem 
               itemId="overview" 
@@ -276,24 +234,27 @@ const App = () => {
             >
               Topology
             </NavItem>
-            {userRole === 'api-owner' && (
-              <>
-                <NavItem
-                  itemId="api-products"
-                  isActive={activeItem === 'api-products'}
-                  onClick={() => setActiveItem('api-products')}
-                >
-                  API products
-                </NavItem>
-                <NavItem
-                  itemId="api-key-approvals"
-                  isActive={activeItem === 'api-key-approvals'}
-                  onClick={() => setActiveItem('api-key-approvals')}
-                >
-                  API key approvals
-                </NavItem>
-              </>
-            )}
+            <NavItem 
+              itemId="connectivity-observability" 
+              isActive={activeItem === 'connectivity-observability'}
+              onClick={() => setActiveItem('connectivity-observability')}
+            >
+              Observability
+            </NavItem>
+            <NavItem
+              itemId="api-products"
+              isActive={activeItem === 'api-products'}
+              onClick={() => setActiveItem('api-products')}
+            >
+              API products
+            </NavItem>
+            <NavItem
+              itemId="api-key-approvals"
+              isActive={activeItem === 'api-key-approvals'}
+              onClick={() => setActiveItem('api-key-approvals')}
+            >
+              API key approvals
+            </NavItem>
           </NavExpandable>
           <NavExpandable
             title="Dev portal"
@@ -394,26 +355,25 @@ const App = () => {
         return <PoliciesPage />;
       case 'topology':
         return <TopologyPage />;
+      case 'connectivity-observability':
+        return <ConnectivityObservabilityPage />;
       case 'internal-portals':
         if (selectedApiDetails) {
           return (
             <APIDetailsPage
               apiName={selectedApiDetails}
               onBack={() => setSelectedApiDetails(null)}
-              breadcrumbParent={userRole === 'api-consumer' ? 'Internal portal' : 'Portals'}
+              breadcrumbParent="Portals"
             />
           );
         }
-        if (userRole === 'api-owner') {
-          if (selectedPortal === 'Internal portal') {
-            return <PortalPage onApiNameClick={setSelectedApiDetails} onBack={() => setSelectedPortal(null)} />;
-          }
-          if (selectedPortal) {
-            return <PortalDetailPage portalName={selectedPortal} onBack={() => setSelectedPortal(null)} />;
-          }
-          return <PortalsManagementPage onPortalClick={setSelectedPortal} />;
+        if (selectedPortal === 'Internal portal') {
+          return <PortalPage onApiNameClick={setSelectedApiDetails} onBack={() => setSelectedPortal(null)} />;
         }
-        return <PortalPage onApiNameClick={setSelectedApiDetails} />;
+        if (selectedPortal) {
+          return <PortalDetailPage portalName={selectedPortal} onBack={() => setSelectedPortal(null)} />;
+        }
+        return <PortalsManagementPage onPortalClick={setSelectedPortal} />;
       case 'api-products':
         return <APIProductsPage />;
       case 'api-access':
