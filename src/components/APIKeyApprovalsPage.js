@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   PageSection,
   Title,
   Flex,
-  FlexItem,
   Button,
   Dropdown,
   DropdownItem,
   DropdownList,
   MenuToggle,
   Icon,
-  SearchInput
+  SearchInput,
+  Divider,
+  Checkbox,
+  Toolbar,
+  ToolbarContent,
+  ToolbarGroup,
+  ToolbarItem,
+  ToolbarFilter,
+  Label,
+  Tooltip,
+  Alert,
+  AlertVariant,
+  AlertActionLink
 } from '@patternfly/react-core';
 import {
   Table,
@@ -22,189 +33,506 @@ import {
 } from '@patternfly/react-table';
 import {
   FilterIcon,
-  EllipsisVIcon
+  EllipsisVIcon,
+  CheckCircleIcon,
+  PendingIcon,
+  ExclamationCircleIcon,
+  AngleRightIcon,
+  AngleDownIcon,
+  CaretDownIcon
 } from '@patternfly/react-icons';
+import {
+  buildCredentialsData,
+  TIER_LIMIT,
+  TIER_TOOLTIPS,
+  CREDENTIAL_TIER_OPTIONS,
+  USE_CASE_EXPANDED_TEXT
+} from '../data/apiCredentialsModel';
+import {
+  TierSortableColumnHeader,
+  TIER_TABLE_COLUMN_MIN_WIDTH,
+} from './TierSortableColumnHeader';
 
-const CREDENTIAL_NAMES = [
-  'Order Service Key',
-  'Auth API Key',
-  'Payment Gateway Credential',
-  'Catalog API Key',
-  'Inventory Sync Key',
-  'Notification Service Key',
-  'Analytics API Credential',
-  'Customer Profile Key',
-  'Shipping API Key',
-  'Billing API Credential'
-];
-
-const CLIENTS = ['Alice Chen', 'Bob Martinez', 'Carol Williams', 'David Kim', 'Eva Schmidt', 'Frank Brown', 'Grace Lee', 'Henry Wilson', 'Ivy Zhang', 'Jack Taylor'];
-const STATUSES = ['Active', 'Pending', 'Active', 'Revoked', 'Active', 'Expired', 'Active', 'Pending', 'Active', 'Active'];
-const TIERS = ['Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze', 'Gold', 'Silver', 'Bronze'];
-const REQUESTED_APIS = [
-  'Order Service API',
-  'User Authentication API',
-  'Payment Gateway API',
-  'Product Catalog API',
-  'Inventory Management API',
-  'Notification Service API',
-  'Analytics Events API',
-  'Customer Profile API',
-  'Shipping & Fulfillment API',
-  'Billing & Invoicing API'
-];
-
-const credentialsData = CREDENTIAL_NAMES.map((name, i) => ({
-  id: `cred-${i}`,
-  name,
-  client: CLIENTS[i],
-  status: STATUSES[i],
-  tier: TIERS[i],
-  requestedApi: REQUESTED_APIS[i]
-}));
-
-const STATUS_OPTIONS = ['Active', 'Pending', 'Revoked', 'Expired'];
-const TIER_OPTIONS = ['Bronze', 'Gold', 'Silver'];
+const STATUS_OPTIONS = ['Active', 'Pending', 'Rejected', 'Revoked', 'Expired'];
+const STATUS_RANK = { Active: 4, Pending: 3, Rejected: 2, Revoked: 1, Expired: 0 };
 
 const APIKeyApprovalsPage = () => {
+  const credentialsData = useMemo(() => buildCredentialsData(), []);
+
+  const [projectOpen, setProjectOpen] = useState(false);
   const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-  const [tiersFilterOpen, setTiersFilterOpen] = useState(false);
+  const [tierFilterOpen, setTierFilterOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [statusFilters, setStatusFilters] = useState([]);
+  const [tierFilters, setTierFilters] = useState([]);
   const [actionsOpenRowId, setActionsOpenRowId] = useState(null);
   const [searchValue, setSearchValue] = useState('');
+  const [expandedRows, setExpandedRows] = useState({});
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
+  const [sortState, setSortState] = useState({
+    index: 2,
+    direction: 'asc',
+    defaultDirection: 'asc'
+  });
 
-  const filteredCredentials = credentialsData.filter(
-    (row) =>
+  const handleSort = (_event, index, direction) => {
+    setSortState({ index, direction, defaultDirection: 'asc' });
+  };
+
+  const clearAllFilters = () => {
+    setStatusFilters([]);
+    setTierFilters([]);
+  };
+
+  const toggleStatusFilter = (value) => {
+    setStatusFilters((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    );
+  };
+
+  const toggleTierFilter = (value) => {
+    setTierFilters((prev) =>
+      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value]
+    );
+  };
+
+  const toggleExpand = (id) => {
+    setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const filteredCredentials = credentialsData.filter((row) => {
+    const matchesSearch =
       !searchValue ||
       row.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.status.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.tier.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.requestedApi.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.client.toLowerCase().includes(searchValue.toLowerCase())
-  );
+      row.api.toLowerCase().includes(searchValue.toLowerCase());
+    const matchesStatus = statusFilters.length === 0 || statusFilters.includes(row.status);
+    const matchesTier = tierFilters.length === 0 || tierFilters.includes(row.tier);
+    return matchesSearch && matchesStatus && matchesTier;
+  });
+
+  const sortedCredentials = useMemo(() => {
+    const list = [...filteredCredentials];
+    const { index, direction } = sortState;
+    const mult = direction === 'asc' ? 1 : -1;
+    list.sort((a, b) => {
+      let cmp = 0;
+      switch (index) {
+        case 2:
+          cmp = (a.api || '').localeCompare(b.api || '', undefined, { sensitivity: 'base' });
+          break;
+        case 3:
+          cmp = (STATUS_RANK[a.status] ?? 0) - (STATUS_RANK[b.status] ?? 0);
+          break;
+        case 4:
+          cmp = (TIER_LIMIT[a.tier] ?? 0) - (TIER_LIMIT[b.tier] ?? 0);
+          break;
+        case 5:
+          cmp = (a.owner || '').localeCompare(b.owner || '', undefined, { sensitivity: 'base' });
+          break;
+        case 6:
+          cmp = (a.requestedTime || '').localeCompare(b.requestedTime || '', undefined, { numeric: true });
+          break;
+        default:
+          return 0;
+      }
+      return mult * cmp;
+    });
+    return list;
+  }, [filteredCredentials, sortState.index, sortState.direction]);
+
+  const visibleIds = sortedCredentials.map((r) => r.id);
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id));
+  const someVisibleSelected = visibleIds.some((id) => selectedIds.has(id)) && !allVisibleSelected;
+
+  const toggleSelectAllVisible = (checked) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        visibleIds.forEach((id) => next.add(id));
+      } else {
+        visibleIds.forEach((id) => next.delete(id));
+      }
+      return next;
+    });
+  };
+
+  const toggleRowSelected = (id, checked) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(id);
+      else next.delete(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelectedIds(new Set());
+
+  const renderStatus = (status) => {
+    const isActive = status === 'Active';
+    const isPending = status === 'Pending';
+    const iconStatus = isActive ? 'success' : isPending ? 'info' : 'danger';
+    const StatusIcon = isActive ? CheckCircleIcon : isPending ? PendingIcon : ExclamationCircleIcon;
+    return (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <Icon size="sm" status={iconStatus} style={{ flexShrink: 0 }}>
+          <StatusIcon />
+        </Icon>
+        <span style={{ color: 'var(--pf-t--global--text--color--regular)' }}>{status}</span>
+      </span>
+    );
+  };
 
   return (
     <>
+      <style>{`
+        .toolbar-api-approvals .pf-v6-c-toolbar__content:last-of-type {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          gap: var(--pf-t--global--spacer--md);
+        }
+        .tier-dropdown-list-approvals {
+          max-height: 12rem;
+          overflow-y: auto;
+        }
+        .tier-dropdown-list-approvals .pf-v6-c-menu__list-item > .pf-v6-c-menu__item,
+        .status-dropdown-list-approvals .pf-v6-c-menu__list-item > .pf-v6-c-menu__item {
+          width: 100%;
+        }
+        .status-dropdown-list-approvals .pf-v6-c-menu__item-select-icon,
+        .tier-dropdown-list-approvals .pf-v6-c-menu__item-select-icon {
+          display: none !important;
+        }
+        .toolbar-api-approvals .pf-v6-c-label-group .pf-v6-c-label.pf-m-outline {
+          --pf-v6-c-label--m-outline--BackgroundColor: var(--pf-t--global--color--nonstatus--gray--default);
+          --pf-v6-c-label--BorderWidth: 0;
+          --pf-v6-c-label--BorderColor: transparent;
+          --pf-v6-c-label--Color: var(--pf-t--global--text--color--regular);
+          --pf-v6-c-label__icon--Color: var(--pf-t--global--icon--color--regular);
+          --pf-v6-c-label--m-outline--Color: var(--pf-t--global--text--color--regular);
+          --pf-v6-c-label--m-outline__icon--Color: var(--pf-t--global--icon--color--regular);
+          --pf-v6-c-label--m-outline--m-clickable--hover--BackgroundColor: var(
+            --pf-t--global--color--nonstatus--gray--hover
+          );
+        }
+        .toolbar-api-approvals .pf-v6-c-label-group .pf-v6-c-label.pf-m-outline .pf-v6-c-label__actions .pf-v6-c-button {
+          --pf-v6-c-button__icon--Color: var(--pf-t--global--icon--color--regular);
+        }
+      `}</style>
       <PageSection variant="light">
-        <Title headingLevel="h1" size="2xl">API key approval</Title>
-        <p style={{ marginTop: '8px', color: 'var(--pf-v5-global--Color--200)' }}>
-          Manage keys issued to clients for accessing APIs.
+        <Dropdown
+          isOpen={projectOpen}
+          onOpenChange={(open) => setProjectOpen(open)}
+          onSelect={() => setProjectOpen(false)}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => setProjectOpen((prev) => !prev)}
+              isExpanded={projectOpen}
+              variant="default"
+            >
+              Project: All Projects
+            </MenuToggle>
+          )}
+        >
+          <DropdownList>
+            <DropdownItem key="all">All Projects</DropdownItem>
+            <DropdownItem key="proj1">Project 1</DropdownItem>
+            <DropdownItem key="proj2">Project 2</DropdownItem>
+          </DropdownList>
+        </Dropdown>
+        <div style={{ width: '100%' }}>
+          <Divider style={{ marginTop: '16px', marginBottom: '16px' }} />
+        </div>
+        <Title headingLevel="h1" size="2xl">
+          API key approval
+        </Title>
+        <p style={{ marginTop: '8px', color: 'var(--pf-t--global--text--color--subtle)' }}>
+          Manage keys issued to requesters for accessing APIs.
         </p>
-        <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapMd' }} style={{ marginTop: '24px' }}>
-          <Dropdown
-            isOpen={statusFilterOpen}
-            onOpenChange={(open) => setStatusFilterOpen(open)}
-            onSelect={() => setStatusFilterOpen(false)}
-            toggle={(toggleRef) => (
-              <MenuToggle
-                ref={toggleRef}
-                onClick={() => setStatusFilterOpen((prev) => !prev)}
-                isExpanded={statusFilterOpen}
-                variant="default"
-              >
-                <Icon style={{ marginRight: '8px' }}>
-                  <FilterIcon />
-                </Icon>
-                Status
-              </MenuToggle>
-            )}
-          >
-            <DropdownList>
-              {STATUS_OPTIONS.map((status) => (
-                <DropdownItem key={status}>{status}</DropdownItem>
-              ))}
-            </DropdownList>
-          </Dropdown>
-          <Dropdown
-            isOpen={tiersFilterOpen}
-            onOpenChange={(open) => setTiersFilterOpen(open)}
-            onSelect={() => setTiersFilterOpen(false)}
-            toggle={(toggleRef) => (
-              <MenuToggle
-                ref={toggleRef}
-                onClick={() => setTiersFilterOpen((prev) => !prev)}
-                isExpanded={tiersFilterOpen}
-                variant="default"
-              >
-                <Icon style={{ marginRight: '8px' }}>
-                  <FilterIcon />
-                </Icon>
-                Tiers
-              </MenuToggle>
-            )}
-          >
-            <DropdownList>
-              {TIER_OPTIONS.map((t) => (
-                <DropdownItem key={t}>{t}</DropdownItem>
-              ))}
-            </DropdownList>
-          </Dropdown>
-          <FlexItem grow={{ default: 'grow' }} style={{ minWidth: 0 }}>
-            <SearchInput
-              placeholder="Search.."
-              value={searchValue}
-              onChange={(_, value) => setSearchValue(value)}
-              onClear={() => setSearchValue('')}
-              style={{ width: '100%', maxWidth: '200px' }}
-            />
-          </FlexItem>
-        </Flex>
-      </PageSection>
 
-      <PageSection>
-        <Table aria-label="API credentials table">
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-              <Th>Client</Th>
-              <Th>Status</Th>
-              <Th>Tiers</Th>
-              <Th>Requested API</Th>
-              <Th />
-            </Tr>
-          </Thead>
-          <Tbody>
-            {filteredCredentials.map((row) => (
-              <Tr key={row.id}>
-                <Td>
-                  <Button variant="link" isInline component="a" href="#">
-                    {row.name}
-                  </Button>
-                </Td>
-                <Td>{row.client}</Td>
-                <Td>{row.status}</Td>
-                <Td>{row.tier}</Td>
-                <Td>
-                  <Button variant="link" isInline component="a" href="#">
-                    {row.requestedApi}
-                  </Button>
-                </Td>
-                <Td>
+        <Toolbar
+          className="toolbar-api-approvals"
+          clearAllFilters={clearAllFilters}
+          clearFiltersButtonText="Clear filters"
+          style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}
+        >
+          <ToolbarContent>
+            <ToolbarGroup>
+              <ToolbarItem>
+                <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapNone' }}>
+                  <Checkbox
+                    id="approvals-select-all"
+                    isChecked={allVisibleSelected}
+                    isIndeterminate={someVisibleSelected}
+                    onChange={(_e, checked) => toggleSelectAllVisible(checked)}
+                    aria-label="Select all rows on this page"
+                  />
                   <Dropdown
-                    isOpen={actionsOpenRowId === row.id}
-                    onOpenChange={(open) => setActionsOpenRowId(open ? row.id : null)}
-                    onSelect={() => setActionsOpenRowId(null)}
+                    isOpen={bulkOpen}
+                    onOpenChange={setBulkOpen}
+                    onSelect={() => setBulkOpen(false)}
                     toggle={(toggleRef) => (
                       <MenuToggle
                         ref={toggleRef}
-                        aria-label="Actions"
                         variant="plain"
-                        onClick={() => setActionsOpenRowId(actionsOpenRowId === row.id ? null : row.id)}
+                        onClick={() => setBulkOpen((prev) => !prev)}
+                        isExpanded={bulkOpen}
+                        aria-label="Bulk selection options"
                       >
-                        <EllipsisVIcon />
+                        <CaretDownIcon />
                       </MenuToggle>
                     )}
                   >
                     <DropdownList>
-                      <DropdownItem key="view">View details</DropdownItem>
-                      <DropdownItem key="approve">Approve</DropdownItem>
-                      <DropdownItem key="reject">Reject</DropdownItem>
+                      <DropdownItem key="all" onClick={() => toggleSelectAllVisible(true)}>
+                        Select all on page
+                      </DropdownItem>
+                      <DropdownItem key="none" onClick={clearSelection}>
+                        Select none
+                      </DropdownItem>
                     </DropdownList>
                   </Dropdown>
-                </Td>
-              </Tr>
+                </Flex>
+              </ToolbarItem>
+              <ToolbarFilter
+                categoryName="Status"
+                labels={statusFilters}
+                deleteLabel={(_cat, label) => setStatusFilters((prev) => prev.filter((s) => s !== label))}
+                deleteLabelGroup={() => setStatusFilters([])}
+              >
+                <Dropdown
+                  isOpen={statusFilterOpen}
+                  onOpenChange={(open) => setStatusFilterOpen(open)}
+                  onSelect={() => {}}
+                  toggle={(toggleRef) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={() => setStatusFilterOpen((prev) => !prev)}
+                      isExpanded={statusFilterOpen}
+                      variant="default"
+                    >
+                      <Icon style={{ marginRight: '8px' }}>
+                        <FilterIcon />
+                      </Icon>
+                      Status
+                    </MenuToggle>
+                  )}
+                >
+                  <DropdownList className="status-dropdown-list-approvals">
+                    {STATUS_OPTIONS.map((s) => (
+                      <DropdownItem
+                        key={s}
+                        value={s}
+                        hasCheckbox
+                        isSelected={statusFilters.includes(s)}
+                        onClick={() => toggleStatusFilter(s)}
+                      >
+                        {s}
+                      </DropdownItem>
+                    ))}
+                  </DropdownList>
+                </Dropdown>
+              </ToolbarFilter>
+              <ToolbarFilter
+                categoryName="Tier"
+                labels={tierFilters}
+                deleteLabel={(_cat, label) => setTierFilters((prev) => prev.filter((t) => t !== label))}
+                deleteLabelGroup={() => setTierFilters([])}
+                labelGroupCollapsedText={tierFilters.length > 3 ? `${tierFilters.length - 3} more` : undefined}
+              >
+                <Dropdown
+                  isOpen={tierFilterOpen}
+                  onOpenChange={(open) => setTierFilterOpen(open)}
+                  onSelect={() => {}}
+                  toggle={(toggleRef) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      onClick={() => setTierFilterOpen((prev) => !prev)}
+                      isExpanded={tierFilterOpen}
+                      variant="default"
+                    >
+                      <Icon style={{ marginRight: '8px' }}>
+                        <FilterIcon />
+                      </Icon>
+                      Tier
+                    </MenuToggle>
+                  )}
+                >
+                  <DropdownList className="tier-dropdown-list-approvals">
+                    {CREDENTIAL_TIER_OPTIONS.map((t) => (
+                      <DropdownItem
+                        key={t}
+                        value={t}
+                        hasCheckbox
+                        isSelected={tierFilters.includes(t)}
+                        description={`Rate limits: ${TIER_TOOLTIPS[t] || '-'}`}
+                        onClick={() => toggleTierFilter(t)}
+                      >
+                        {t}
+                      </DropdownItem>
+                    ))}
+                  </DropdownList>
+                </Dropdown>
+              </ToolbarFilter>
+              <ToolbarItem>
+                <SearchInput
+                  placeholder="Find by API or API key name"
+                  value={searchValue}
+                  onChange={(_, value) => setSearchValue(value)}
+                  onClear={() => setSearchValue('')}
+                  style={{ width: '100%', minWidth: '280px', maxWidth: 'min(100%, 26rem)' }}
+                />
+              </ToolbarItem>
+            </ToolbarGroup>
+          </ToolbarContent>
+        </Toolbar>
+
+        <div style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}>
+          <Table aria-label="API key approval table">
+          <Thead>
+            <Tr>
+              <Th style={{ width: '24px', paddingLeft: '8px', paddingRight: '4px' }} />
+              <Th screenReaderText="Row selection" />
+              <Th sort={{ columnIndex: 2, sortBy: sortState, onSort: handleSort }}>API</Th>
+              <Th sort={{ columnIndex: 3, sortBy: sortState, onSort: handleSort }}>Status</Th>
+              <Th
+                dataLabel="Tier"
+                style={{ minWidth: TIER_TABLE_COLUMN_MIN_WIDTH, whiteSpace: 'nowrap' }}
+              >
+                <TierSortableColumnHeader columnIndex={4} sortBy={sortState} onSort={handleSort} />
+              </Th>
+              <Th sort={{ columnIndex: 5, sortBy: sortState, onSort: handleSort }}>Requester</Th>
+              <Th sort={{ columnIndex: 6, sortBy: sortState, onSort: handleSort }}>Requested time</Th>
+              <Th />
+            </Tr>
+          </Thead>
+          <Tbody>
+            {sortedCredentials.map((row) => (
+              <React.Fragment key={row.id}>
+                <Tr style={expandedRows[row.id] ? { borderBottom: 'none' } : undefined}>
+                  <Td style={{ width: '24px', paddingLeft: '8px', paddingRight: '4px', verticalAlign: 'middle' }}>
+                    <Button
+                      variant="plain"
+                      aria-label={expandedRows[row.id] ? 'Collapse' : 'Expand'}
+                      onClick={() => toggleExpand(row.id)}
+                      style={{ display: 'inline-flex', alignItems: 'center' }}
+                    >
+                      {expandedRows[row.id] ? <AngleDownIcon /> : <AngleRightIcon />}
+                    </Button>
+                  </Td>
+                  <Td style={{ verticalAlign: 'middle', width: '40px' }}>
+                    <Checkbox
+                      id={`approvals-row-${row.id}`}
+                      isChecked={selectedIds.has(row.id)}
+                      onChange={(_e, checked) => toggleRowSelected(row.id, checked)}
+                      aria-label={`Select ${row.name}`}
+                    />
+                  </Td>
+                  <Td style={{ verticalAlign: 'middle' }}>
+                    <Button variant="link" isInline component="a" href="#">
+                      {row.api}
+                    </Button>
+                  </Td>
+                  <Td style={{ verticalAlign: 'middle' }}>{renderStatus(row.status)}</Td>
+                  <Td style={{ verticalAlign: 'middle', minWidth: TIER_TABLE_COLUMN_MIN_WIDTH }}>
+                    <Tooltip content={TIER_TOOLTIPS[row.tier] || `${row.tier} tier`}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <Label variant="outline" isCompact>
+                          {row.tier}
+                        </Label>
+                      </span>
+                    </Tooltip>
+                  </Td>
+                  <Td style={{ verticalAlign: 'middle' }}>{row.owner}</Td>
+                  <Td style={{ verticalAlign: 'middle' }}>{row.requestedTime}</Td>
+                  <Td style={{ verticalAlign: 'middle' }}>
+                    <Dropdown
+                      isOpen={actionsOpenRowId === row.id}
+                      onOpenChange={(open) => setActionsOpenRowId(open ? row.id : null)}
+                      onSelect={() => setActionsOpenRowId(null)}
+                      toggle={(toggleRef) => (
+                        <MenuToggle
+                          ref={toggleRef}
+                          aria-label="Actions"
+                          variant="plain"
+                          onClick={() =>
+                            setActionsOpenRowId(actionsOpenRowId === row.id ? null : row.id)
+                          }
+                          style={{ display: 'inline-flex', alignItems: 'center' }}
+                        >
+                          <EllipsisVIcon />
+                        </MenuToggle>
+                      )}
+                    >
+                      <DropdownList>
+                        <DropdownItem key="view">View details</DropdownItem>
+                        <DropdownItem key="approve">Approve</DropdownItem>
+                        <DropdownItem key="reject">Reject</DropdownItem>
+                        <DropdownItem key="edit">Edit</DropdownItem>
+                      </DropdownList>
+                    </Dropdown>
+                  </Td>
+                </Tr>
+                {expandedRows[row.id] && (
+                  <Tr isExpanded style={{ borderTop: 'none' }}>
+                    <Td
+                      colSpan={8}
+                      style={{
+                        borderTop: 'none',
+                        paddingTop: 0,
+                        paddingBottom: '16px',
+                        verticalAlign: 'top',
+                        boxShadow: 'none'
+                      }}
+                    >
+                      <div
+                        style={{
+                          paddingLeft: '52px',
+                          paddingTop: '16px',
+                          paddingBottom: 0,
+                          backgroundColor: 'var(--pf-t--global--background--color--100)'
+                        }}
+                      >
+                        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>API key name</div>
+                        <div style={{ marginBottom: '16px', color: 'var(--pf-t--global--text--color--regular)' }}>
+                          {row.name}
+                        </div>
+                        <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>Use case</div>
+                        <div style={{ color: 'var(--pf-t--global--text--color--subtle)' }}>
+                          {row.useCase || USE_CASE_EXPANDED_TEXT}
+                        </div>
+                        {row.status === 'Rejected' && (
+                          <Alert
+                            variant={AlertVariant.danger}
+                            isInline
+                            title={
+                              <>
+                                <strong>Rejection reason: </strong>
+                                {row.rejectionReason ||
+                                  'No additional details were provided for this rejection.'}
+                              </>
+                            }
+                            component="div"
+                            actionLinks={
+                              <AlertActionLink href="#" onClick={(e) => e.preventDefault()}>
+                                Request a new API key
+                              </AlertActionLink>
+                            }
+                            style={{ marginTop: '16px' }}
+                          />
+                        )}
+                      </div>
+                    </Td>
+                  </Tr>
+                )}
+              </React.Fragment>
             ))}
           </Tbody>
         </Table>
+        </div>
       </PageSection>
     </>
   );

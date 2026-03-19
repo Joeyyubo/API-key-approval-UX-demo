@@ -133,13 +133,13 @@ const MCPServerLogsPage = ({ serverName = 'Desktop Commander', onBack, onCancel 
   const getLogLevelIcon = (level) => {
     switch (level) {
       case 'error':
-        return <ExclamationCircleIcon color="var(--pf-v5-global--danger-color--100)" />;
+        return <ExclamationCircleIcon color="var(--pf-t--global--color--status--danger--100)" />;
       case 'warn':
-        return <ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" />;
+        return <ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" />;
       case 'info':
-        return <InfoCircleIcon color="var(--pf-v5-global--info-color--100)" />;
+        return <InfoCircleIcon color="var(--pf-t--global--color--status--info--100)" />;
       case 'debug':
-        return <InfoCircleIcon color="var(--pf-v5-global--Color--200)" />;
+        return <InfoCircleIcon color="var(--pf-t--global--text--color--subtle)" />;
       default:
         return <InfoCircleIcon />;
     }

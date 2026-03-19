@@ -18,7 +18,12 @@ import {
   Button,
   Grid,
   GridItem,
-  Label
+  Label,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  Divider
 } from '@patternfly/react-core';
 import {
   Table,
@@ -274,8 +279,9 @@ components:
 `;
 };
 
-const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'Portals' }) => {
+const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'API catalog' }) => {
   const [activeTabKey, setActiveTabKey] = useState('overview');
+  const [projectOpen, setProjectOpen] = useState(false);
   const details = getDetails(apiName);
 
   const handleTabClick = (event, tabIndex) => {
@@ -285,6 +291,30 @@ const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'Portals' }) => {
   return (
     <>
       <PageSection variant="light">
+        <Dropdown
+          isOpen={projectOpen}
+          onOpenChange={(open) => setProjectOpen(open)}
+          onSelect={() => setProjectOpen(false)}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => setProjectOpen((prev) => !prev)}
+              isExpanded={projectOpen}
+              variant="default"
+            >
+              Project: All Projects
+            </MenuToggle>
+          )}
+        >
+          <DropdownList>
+            <DropdownItem key="all">All Projects</DropdownItem>
+            <DropdownItem key="proj1">Project 1</DropdownItem>
+            <DropdownItem key="proj2">Project 2</DropdownItem>
+          </DropdownList>
+        </Dropdown>
+        <div style={{ width: '100%' }}>
+          <Divider style={{ marginTop: '16px', marginBottom: '16px' }} />
+        </div>
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} alignItems={{ default: 'alignItemsFlexStart' }}>
           <FlexItem>
             <Breadcrumb style={{ marginBottom: '16px' }}>
@@ -318,13 +348,13 @@ const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'Portals' }) => {
         style={{
           height: 'calc(100vh - 280px)',
           overflowY: 'auto',
-          backgroundColor: 'var(--pf-v5-global--BackgroundColor--100)'
+          backgroundColor: 'var(--pf-t--global--background--color--100)'
         }}
       >
         {activeTabKey === 'api-product' && (() => {
           const product = getApiProductDetails(apiName);
-          const labelStyle = { fontSize: '12px', fontWeight: 600, color: 'var(--pf-v5-global--Color--200)', textTransform: 'uppercase' };
-          const sectionTitleStyle = { marginBottom: '12px', fontSize: '12px', fontWeight: 600, color: 'var(--pf-v5-global--Color--200)', textTransform: 'uppercase' };
+          const labelStyle = { fontSize: '12px', fontWeight: 600, color: 'var(--pf-t--global--text--color--subtle)', textTransform: 'uppercase' };
+          const sectionTitleStyle = { marginBottom: '12px', fontSize: '12px', fontWeight: 600, color: 'var(--pf-t--global--text--color--subtle)', textTransform: 'uppercase' };
           return (
             <Grid hasGutter>
               <GridItem md={6}>
@@ -379,7 +409,7 @@ const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'Portals' }) => {
                   <DescriptionListGroup>
                     <DescriptionListTerm>Email</DescriptionListTerm>
                     <DescriptionListDescription>
-                      <a href={`mailto:${product.contactEmail}`} style={{ color: 'var(--pf-v5-global--link--Color)' }}>{product.contactEmail}</a>
+                      <a href={`mailto:${product.contactEmail}`} style={{ color: 'var(--pf-t--global--text--color--link--default)' }}>{product.contactEmail}</a>
                     </DescriptionListDescription>
                   </DescriptionListGroup>
                 </DescriptionList>
@@ -406,11 +436,11 @@ const APIDetailsPage = ({ apiName, onBack, breadcrumbParent = 'Portals' }) => {
                 <DescriptionList isCompact>
                   <DescriptionListGroup>
                     <DescriptionListTerm>Docs</DescriptionListTerm>
-                    <DescriptionListDescription><a href={product.docsUrl} style={{ color: 'var(--pf-v5-global--link--Color)' }}>View Documentation</a></DescriptionListDescription>
+                    <DescriptionListDescription><a href={product.docsUrl} style={{ color: 'var(--pf-t--global--text--color--link--default)' }}>View Documentation</a></DescriptionListDescription>
                   </DescriptionListGroup>
                   <DescriptionListGroup>
                     <DescriptionListTerm>OpenAPI Spec</DescriptionListTerm>
-                    <DescriptionListDescription><a href={product.specUrl} style={{ color: 'var(--pf-v5-global--link--Color)' }}>View Spec</a></DescriptionListDescription>
+                    <DescriptionListDescription><a href={product.specUrl} style={{ color: 'var(--pf-t--global--text--color--link--default)' }}>View Spec</a></DescriptionListDescription>
                   </DescriptionListGroup>
                 </DescriptionList>
               </GridItem>

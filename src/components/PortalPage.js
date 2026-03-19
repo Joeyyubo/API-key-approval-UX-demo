@@ -13,7 +13,8 @@ import {
   DropdownItem,
   DropdownList,
   MenuToggle,
-  Icon
+  Icon,
+  Divider
 } from '@patternfly/react-core';
 import {
   Table,
@@ -52,10 +53,35 @@ const apiData = API_NAMES.map((name, i) => ({
 
 const PortalPage = ({ onApiNameClick, onBack }) => {
   const [lifecycleDropdownOpen, setLifecycleDropdownOpen] = useState(false);
+  const [projectOpen, setProjectOpen] = useState(false);
 
   return (
     <>
       <PageSection variant="light">
+        <Dropdown
+          isOpen={projectOpen}
+          onOpenChange={(open) => setProjectOpen(open)}
+          onSelect={() => setProjectOpen(false)}
+          toggle={(toggleRef) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => setProjectOpen((prev) => !prev)}
+              isExpanded={projectOpen}
+              variant="default"
+            >
+              Project: All Projects
+            </MenuToggle>
+          )}
+        >
+          <DropdownList>
+            <DropdownItem key="all">All Projects</DropdownItem>
+            <DropdownItem key="proj1">Project 1</DropdownItem>
+            <DropdownItem key="proj2">Project 2</DropdownItem>
+          </DropdownList>
+        </Dropdown>
+        <div style={{ width: '100%' }}>
+          <Divider style={{ marginTop: '16px', marginBottom: '16px' }} />
+        </div>
         {onBack && (
           <Breadcrumb style={{ marginBottom: '16px' }}>
             <BreadcrumbItem
@@ -63,13 +89,13 @@ const PortalPage = ({ onApiNameClick, onBack }) => {
               isLink
               style={{ color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
             >
-              Portals
+              API catalog
             </BreadcrumbItem>
-            <BreadcrumbItem isActive>Internal portal</BreadcrumbItem>
+            <BreadcrumbItem isActive>API catalog</BreadcrumbItem>
           </Breadcrumb>
         )}
-        <Title headingLevel="h1" size="2xl">Internal portal</Title>
-        <p style={{ marginTop: '8px', color: 'var(--pf-v5-global--Color--200)' }}>
+        <Title headingLevel="h1" size="2xl">API catalog</Title>
+        <p style={{ marginTop: '8px', color: 'var(--pf-t--global--text--color--subtle)' }}>
           View the organization internal available APIs.
         </p>
       </PageSection>
@@ -132,7 +158,7 @@ const PortalPage = ({ onApiNameClick, onBack }) => {
                 <Td>
                   <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapXs' }}>
                     <Icon>
-                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-v5-global--Color--200)' }} />
+                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }} />
                     </Icon>
                     <span>{row.version}</span>
                   </Flex>

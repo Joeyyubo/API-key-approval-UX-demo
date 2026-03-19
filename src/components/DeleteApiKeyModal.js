@@ -1,0 +1,98 @@
+import React, { useEffect, useState } from 'react';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  Tooltip
+} from '@patternfly/react-core';
+import { getApiKeyNameTableDisplay } from './ApiKeyNameText';
+
+/**
+ * Delete API key confirmation — typing the exact key name enables Delete.
+ * Opened from API key details or My API keys row actions.
+ */
+const DeleteApiKeyModal = ({ credential, isOpen, onClose, onConfirm }) => {
+  const [confirmInput, setConfirmInput] = useState('');
+
+  useEffect(() => {
+    if (isOpen && credential) {
+      setConfirmInput('');
+    }
+  }, [isOpen, credential?.id]);
+
+  if (!credential) {
+    return null;
+  }
+
+  const { id, name: expectedName } = credential;
+  const nameInLabel = getApiKeyNameTableDisplay(expectedName);
+  const trimmed = confirmInput.trim();
+  const canDelete = trimmed.length > 0 && trimmed === expectedName;
+
+  let validated = 'default';
+  if (trimmed.length > 0) {
+    validated = canDelete ? 'success' : 'warning';
+  }
+
+  const handleDelete = () => {
+    if (!canDelete) return;
+    onConfirm(id);
+  };
+
+  return (
+    <Modal title="Delete API key" isOpen={isOpen} onClose={onClose} variant="small" aria-labelledby="delete-api-key-title">
+      <ModalHeader title="Delete API key" titleIconVariant="danger" labelId="delete-api-key-title" />
+      <ModalBody>
+        <p style={{ marginBottom: 'var(--pf-t--global--spacer--lg)', color: 'var(--pf-t--global--text--color--regular)' }}>
+          The API key will be deleted and removed. The deletion will immediately disable access for all applications
+          currently using it.
+        </p>
+        <Form id="delete-api-key-form" onSubmit={(e) => e.preventDefault()}>
+          <FormGroup
+            role="group"
+            fieldId="delete-api-key-confirm"
+            label={
+              <span style={{ fontWeight: 700 }}>
+                Confirm by typing{' '}
+                {nameInLabel.isTruncated ? (
+                  <Tooltip content={nameInLabel.full}>
+                    <span tabIndex={0}>
+                      &ldquo;{nameInLabel.display}&rdquo;
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <>&ldquo;{expectedName}&rdquo;</>
+                )}{' '}
+                below
+              </span>
+            }
+          >
+            <TextInput
+              id="delete-api-key-confirm"
+              value={confirmInput}
+              onChange={(_e, v) => setConfirmInput(v)}
+              validated={validated}
+              aria-label="Type API key name to confirm deletion"
+              autoComplete="off"
+            />
+          </FormGroup>
+        </Form>
+      </ModalBody>
+      <ModalFooter>
+        <Button key="delete" variant="secondary" isDanger isDisabled={!canDelete} onClick={handleDelete}>
+          Delete
+        </Button>
+        <Button key="cancel" variant="link" onClick={onClose}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+export default DeleteApiKeyModal;

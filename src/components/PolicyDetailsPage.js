@@ -192,9 +192,9 @@ spec:
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                   <Icon>
-                    <ArrowUpIcon color="var(--pf-v5-global--success-color--100)" />
+                    <ArrowUpIcon color="var(--pf-t--global--color--status--success--100)" />
                   </Icon>
-                  <span style={{ color: 'var(--pf-v5-global--success-color--100)', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--pf-t--global--color--status--success--100)', fontSize: '14px' }}>
                     +15%
                   </span>
                 </div>
@@ -213,9 +213,9 @@ spec:
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                   <Icon>
-                    <ArrowUpIcon color="var(--pf-v5-global--success-color--100)" />
+                    <ArrowUpIcon color="var(--pf-t--global--color--status--success--100)" />
                   </Icon>
-                  <span style={{ color: 'var(--pf-v5-global--success-color--100)', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--pf-t--global--color--status--success--100)', fontSize: '14px' }}>
                     +8%
                   </span>
                 </div>
@@ -234,9 +234,9 @@ spec:
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                   <Icon>
-                    <ArrowUpIcon color="var(--pf-v5-global--warning-color--100)" />
+                    <ArrowUpIcon color="var(--pf-t--global--color--status--warning--200)" />
                   </Icon>
-                  <span style={{ color: 'var(--pf-v5-global--warning-color--100)', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--pf-t--global--color--status--warning--200)', fontSize: '14px' }}>
                     +23%
                   </span>
                 </div>
@@ -255,9 +255,9 @@ spec:
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
                   <Icon>
-                    <ArrowDownIcon color="var(--pf-v5-global--success-color--100)" />
+                    <ArrowDownIcon color="var(--pf-t--global--color--status--success--100)" />
                   </Icon>
-                  <span style={{ color: 'var(--pf-v5-global--success-color--100)', fontSize: '14px' }}>
+                  <span style={{ color: 'var(--pf-t--global--color--status--success--100)', fontSize: '14px' }}>
                     -2ms
                   </span>
                 </div>

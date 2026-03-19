@@ -21,12 +21,12 @@ const GatewayMetrics = () => {
           <CardBody>
             <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
               <FlexItem>
-                <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                   8
                 </h1>
               </FlexItem>
               <FlexItem>
-                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Total Gateways
                 </h3>
               </FlexItem>
@@ -43,18 +43,18 @@ const GatewayMetrics = () => {
                 <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                   <FlexItem>
                     <Icon>
-                      <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                      <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                     </Icon>
                   </FlexItem>
                   <FlexItem>
-                    <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                    <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                       6
                     </h1>
                   </FlexItem>
                 </Flex>
               </FlexItem>
               <FlexItem>
-                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Healthy Gateways
                 </h3>
               </FlexItem>
@@ -71,18 +71,18 @@ const GatewayMetrics = () => {
                 <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                   <FlexItem>
                     <Icon>
-                      <ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" />
+                      <ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" />
                     </Icon>
                   </FlexItem>
                   <FlexItem>
-                    <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                    <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                       2
                     </h1>
                   </FlexItem>
                 </Flex>
               </FlexItem>
               <FlexItem>
-                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Unhealthy Gateways
                 </h3>
               </FlexItem>

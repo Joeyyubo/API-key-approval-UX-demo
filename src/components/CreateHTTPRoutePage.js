@@ -1883,7 +1883,7 @@ const CreateHTTPRoutePage = ({ onBack, onCancel }) => {
       <Modal
         isOpen={isRulesModalOpen}
         onClose={closeRulesModal}
-        variant="large"
+        variant="small"
       >
         <ModalHeader>
           <Title headingLevel="h2" size="xl">

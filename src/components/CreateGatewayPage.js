@@ -30,8 +30,7 @@ import {
   Wizard,
   WizardStep,
   WizardFooter,
-  Modal,
-  ModalVariant
+  Modal
 } from '@patternfly/react-core';
 import {
   PlusIcon,
@@ -745,7 +744,7 @@ const CreateGatewayPage = ({ onBack, onCancel }) => {
       <Modal
         isOpen={isWizardOpen}
         onClose={closeWizard}
-        variant={ModalVariant.large}
+        variant="small"
         title={editingListenerIndex !== null ? 'Edit Listener' : 'Add New Listener'}
       >
         <Wizard

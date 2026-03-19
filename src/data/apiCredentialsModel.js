@@ -1,0 +1,116 @@
+/**
+ * Single source of truth for My API keys table and API key detail page field values.
+ */
+
+export const USE_CASE_EXPANDED_TEXT =
+  'Expansion Content, holy cannoli looks like we figured it out, holy cannoli looks like we figured it out, holy cannoli looks like we figured it out, holy ca.';
+
+const KEY_NAMES = [
+  'Name of this key',
+  'Auth API Key',
+  'Payment Gateway Credential',
+  'Catalog API Key',
+  'Inventory Sync Key',
+  'Notification Service Key',
+  'Analytics API Credential',
+  'Customer Profile Key',
+  'Shipping API Key',
+  'Billing API Credential'
+];
+
+const STATUSES = ['Active', 'Pending', 'Active', 'Rejected', 'Active', 'Pending', 'Active', 'Rejected', 'Active', 'Pending'];
+
+const TIERS = ['Low', 'High', 'Silver', 'Bronze', 'Gold', 'New', 'Old', 'Gold', 'Silver', 'Bronze'];
+
+const API_NAMES = [
+  'API name',
+  'User Authentication API',
+  'Payment Gateway API',
+  'Product Catalog API',
+  'Inventory Management API',
+  'Notification Service API',
+  'Analytics Events API',
+  'Customer Profile API',
+  'Shipping & Fulfillment API',
+  'Billing & Invoicing API'
+];
+
+/** Extra catalog names for Request API key modal (search / scroll demos) */
+const REQUESTABLE_API_EXTRA = [
+  'Toy store API',
+  'Pet store API',
+  'Cat store API',
+  'Car store API',
+  'Pet sell API',
+  'Pet sale API',
+  'Pet stop API'
+];
+
+/** APIs available in Request API key modal (deduped, no placeholder row label) */
+export const REQUESTABLE_API_NAMES = [...new Set([...API_NAMES, ...REQUESTABLE_API_EXTRA])]
+  .filter((n) => n && n !== 'API name')
+  .sort((a, b) => a.localeCompare(b));
+
+const API_KEY_STATES = ['viewed', 'masked', 'generating', 'empty', 'masked', 'viewed', 'generating', 'empty', 'masked', 'viewed'];
+
+const REJECTION_REASONS = [
+  null,
+  null,
+  null,
+  'Ion test. Lorem ipsum dolor sit amet consectetur adipiscing elit.',
+  null,
+  null,
+  null,
+  'Policy mismatch. The requested scope is not approved for this API.',
+  null,
+  null
+];
+
+/** Tier options for filters and Edit API key modal */
+export const CREDENTIAL_TIER_OPTIONS = ['Bronze', 'Gold', 'Silver', 'Low', 'High', 'New', 'Old'];
+
+/**
+ * Tier choices in Edit API key modal — outline label + daily limit (matches design).
+ * @type {{ value: string, description: string }[]}
+ */
+export const EDIT_MODAL_TIER_OPTIONS = [
+  { value: 'High', description: '4000 per daily' },
+  { value: 'Low', description: '1000 per daily' },
+  { value: 'Silver', description: '1500 per daily' },
+  { value: 'Gold', description: '2000 per daily' }
+];
+
+export const TIER_TOOLTIPS = {
+  Bronze: '500 per daily',
+  Gold: '5000 per daily',
+  Silver: '1000 per daily',
+  Low: '200 per daily',
+  High: '10000 per daily',
+  New: '100 per daily',
+  Old: '50 per daily'
+};
+
+export const TIER_LIMIT = { High: 10000, Gold: 5000, Silver: 1000, Bronze: 500, Low: 200, New: 100, Old: 50 };
+
+/** Same string shown in the Tier column tooltip in the table */
+export function getTierTooltipText(tier) {
+  return TIER_TOOLTIPS[tier] || `${tier} tier`;
+}
+
+/** Requested time string — identical in table and detail (no extra suffix) */
+export const REQUESTED_TIME_DISPLAY = '2026/3/12';
+
+export function buildCredentialsData() {
+  return KEY_NAMES.map((name, i) => ({
+    id: `cred-${i}`,
+    name,
+    owner: 'Guest',
+    api: API_NAMES[i],
+    status: STATUSES[i],
+    tier: TIERS[i],
+    apiKeyState: API_KEY_STATES[i],
+    requestedTime: REQUESTED_TIME_DISPLAY,
+    rejectionReason: REJECTION_REASONS[i] || undefined,
+    useCase: USE_CASE_EXPANDED_TEXT
+  }));
+}

@@ -20,16 +20,13 @@ import {
 import {
   BarsIcon,
   CogIcon,
-  QuestionCircleIcon,
   BellIcon,
   ThIcon,
 } from '@patternfly/react-icons';
+import { FaQuestionCircleRegular } from './components/FaQuestionCircleRegular';
 
-import KuadrantOverview from './components/KuadrantOverview';
 import GatewaysPage from './components/GatewaysPage';
 import RoutesPage from './components/RoutesPage';
-import PoliciesPage from './components/PoliciesPage';
-import TopologyPage from './components/TopologyPage';
 import GatewayDetailsPage from './components/GatewayDetailsPage';
 import CreateGatewayPage from './components/CreateGatewayPage';
 import CreateHTTPRoutePage from './components/CreateHTTPRoutePage';
@@ -40,16 +37,18 @@ import MCPServerTestConnectionPage from './components/MCPServerTestConnectionPag
 import MCPServerLogsPage from './components/MCPServerLogsPage';
 import APIKeyApprovalsPage from './components/APIKeyApprovalsPage';
 import PortalPage from './components/PortalPage';
-import PortalsManagementPage from './components/PortalsManagementPage';
-import PortalDetailPage from './components/PortalDetailPage';
 import APIDetailsPage from './components/APIDetailsPage';
 import APICredentialsPage from './components/APICredentialsPage';
-import APIProductsPage from './components/APIProductsPage';
+import APIKeyDetailPage from './components/APIKeyDetailPage';
+import RevealApiKeyModal from './components/RevealApiKeyModal';
+import EditApiKeyModal from './components/EditApiKeyModal';
+import DeleteApiKeyModal from './components/DeleteApiKeyModal';
+import RequestApiKeyModal from './components/RequestApiKeyModal';
+import { buildCredentialsData, REQUESTED_TIME_DISPLAY } from './data/apiCredentialsModel';
 
 const App = () => {
   const [isNavOpen, setIsNavOpen] = useState(true);
   const [activeItem, setActiveItem] = useState('internal-portals');
-  const [isKuadrantExpanded, setIsKuadrantExpanded] = useState(true);
   const [isInternalPortalExpanded, setIsInternalPortalExpanded] = useState(true);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
@@ -63,6 +62,59 @@ const App = () => {
   const [selectedMCPServer, setSelectedMCPServer] = useState(null);
   const [selectedApiDetails, setSelectedApiDetails] = useState(null); // API name when viewing API details from Portal
   const [selectedPortal, setSelectedPortal] = useState(null); // portal name when API owner clicks a portal card
+  const [selectedApiKey, setSelectedApiKey] = useState(null); // credential row when opening API key details (Active / Pending / Rejected)
+  const [revealedKeyIds, setRevealedKeyIds] = useState(() => new Set());
+  const [revealModalRowId, setRevealModalRowId] = useState(null);
+  const [credentialsList, setCredentialsList] = useState(() => buildCredentialsData());
+  const [editCredentialId, setEditCredentialId] = useState(null);
+  const [deleteCredentialId, setDeleteCredentialId] = useState(null);
+  const [requestApiKeyOpen, setRequestApiKeyOpen] = useState(false);
+
+  const editingCredential = editCredentialId ? credentialsList.find((c) => c.id === editCredentialId) : null;
+  const deletingCredential = deleteCredentialId ? credentialsList.find((c) => c.id === deleteCredentialId) : null;
+
+  const handleEditApiKeySave = (id, { name, tier, useCase }) => {
+    setCredentialsList((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, name, tier, useCase, status: 'Pending' } : r))
+    );
+    setSelectedApiKey((prev) =>
+      prev && prev.id === id ? { ...prev, name, tier, useCase, status: 'Pending' } : prev
+    );
+  };
+
+  const handleRequestApiKeySubmit = ({ api: apiName, tier, name, useCase }) => {
+    const id = `cred-${Date.now()}`;
+    setCredentialsList((prev) => {
+      const displayName = (name && name.trim()) || `API key ${prev.length + 1}`;
+      return [
+        {
+          id,
+          name: displayName,
+          owner: 'Guest',
+          api: apiName,
+          status: 'Pending',
+          tier,
+          apiKeyState: 'empty',
+          requestedTime: REQUESTED_TIME_DISPLAY,
+          useCase: useCase || ''
+        },
+        ...prev
+      ];
+    });
+  };
+
+  const handleDeleteApiKeyConfirm = (id) => {
+    setCredentialsList((prev) => prev.filter((r) => r.id !== id));
+    setSelectedApiKey((prev) => (prev?.id === id ? null : prev));
+    setRevealedKeyIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+    setRevealModalRowId((current) => (current === id ? null : current));
+    setEditCredentialId((current) => (current === id ? null : current));
+    setDeleteCredentialId(null);
+  };
 
   const onNavToggle = () => {
     setIsNavOpen(!isNavOpen);
@@ -76,14 +128,7 @@ const App = () => {
     }
   };
 
-  // Auto-expand Connectivity Link when any of its child items are active
-  useEffect(() => {
-    if (['overview', 'policies', 'topology', 'api-products'].includes(activeItem)) {
-      setIsKuadrantExpanded(true);
-    }
-  }, [activeItem]);
-
-  // Auto-expand Dev portal when any of its child items are active
+  // Auto-expand RHCL API catalog when any of its child items are active
   useEffect(() => {
     if (['internal-portals', 'api-access', 'api-key-approvals'].includes(activeItem)) {
       setIsInternalPortalExpanded(true);
@@ -163,18 +208,6 @@ const App = () => {
           >
             <BarsIcon />
           </PageToggleButton>
-          <FlexItem>
-            <span
-              style={{
-                fontSize: '1.5rem',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                color: 'var(--pf-v5-global--Color--100)'
-              }}
-            >
-              proposal-B
-            </span>
-          </FlexItem>
         </Flex>
       </MastheadToggle>
       
@@ -195,7 +228,7 @@ const App = () => {
             <CogIcon />
           </Button>
           <Button variant="plain" aria-label="Help" style={{ color: 'black' }}>
-            <QuestionCircleIcon />
+            <FaQuestionCircleRegular style={{ color: 'inherit' }} />
           </Button>
         </div>
       </MastheadContent>
@@ -206,72 +239,40 @@ const App = () => {
     <Nav onSelect={onNavSelect} aria-label="Navigation">
       <NavList>
         <NavExpandable
-          title="Connectivity Link"
-            isExpanded={isKuadrantExpanded}
-            onExpand={() => setIsKuadrantExpanded(!isKuadrantExpanded)}
-            isActive={['overview', 'policies', 'topology', 'api-products'].includes(activeItem)}
+          title="RHCL API catalog"
+          isExpanded={isInternalPortalExpanded}
+          onExpand={() => setIsInternalPortalExpanded(!isInternalPortalExpanded)}
+          isActive={['internal-portals', 'api-access', 'api-key-approvals'].includes(activeItem)}
+        >
+          <NavItem
+            itemId="internal-portals"
+            isActive={activeItem === 'internal-portals'}
+            onClick={() => {
+              setActiveItem('internal-portals');
+              setSelectedPortal(null);
+              setSelectedApiDetails(null);
+            }}
           >
-            <NavItem 
-              itemId="overview" 
-              isActive={activeItem === 'overview'}
-              onClick={() => setActiveItem('overview')}
-            >
-              Overview
-            </NavItem>
-            <NavItem 
-              itemId="policies" 
-              isActive={activeItem === 'policies'}
-              onClick={() => setActiveItem('policies')}
-            >
-              Policies
-            </NavItem>
-            <NavItem 
-              itemId="topology" 
-              isActive={activeItem === 'topology'}
-              onClick={() => setActiveItem('topology')}
-            >
-              Topology
-            </NavItem>
-            <NavItem
-              itemId="api-products"
-              isActive={activeItem === 'api-products'}
-              onClick={() => setActiveItem('api-products')}
-            >
-              API products
-            </NavItem>
-          </NavExpandable>
-          <NavExpandable
-            title="Dev portal"
-            isExpanded={isInternalPortalExpanded}
-            onExpand={() => setIsInternalPortalExpanded(!isInternalPortalExpanded)}
-            isActive={['internal-portals', 'api-access', 'api-key-approvals'].includes(activeItem)}
+            API catalog
+          </NavItem>
+          <NavItem
+            itemId="api-access"
+            isActive={activeItem === 'api-access'}
+            onClick={() => {
+              setActiveItem('api-access');
+              setSelectedApiKey(null);
+            }}
           >
-            <NavItem
-              itemId="internal-portals"
-              isActive={activeItem === 'internal-portals'}
-              onClick={() => {
-                setActiveItem('internal-portals');
-                setSelectedPortal(null);
-                setSelectedApiDetails(null);
-              }}
-            >
-              Portals
-            </NavItem>
-            <NavItem
-              itemId="api-access"
-              isActive={activeItem === 'api-access'}
-              onClick={() => setActiveItem('api-access')}
-            >
-              My API keys
-            </NavItem>
-            <NavItem
-              itemId="api-key-approvals"
-              isActive={activeItem === 'api-key-approvals'}
-              onClick={() => setActiveItem('api-key-approvals')}
-            >
-              API key approval
-            </NavItem>
-          </NavExpandable>
+            My API keys
+          </NavItem>
+          <NavItem
+            itemId="api-key-approvals"
+            isActive={activeItem === 'api-key-approvals'}
+            onClick={() => setActiveItem('api-key-approvals')}
+          >
+            API key approval
+          </NavItem>
+        </NavExpandable>
       </NavList>
     </Nav>
   );
@@ -335,48 +336,73 @@ const App = () => {
         return <GatewaysPage onGatewayNameClick={handleGatewayNameClick} onCreateGateway={handleCreateGateway} />;
       case 'routes':
         return <RoutesPage onCreateHTTPRoute={handleCreateHTTPRouteFromRoutes} />;
-      case 'policies':
-        return <PoliciesPage />;
-      case 'topology':
-        return <TopologyPage />;
       case 'internal-portals':
         if (selectedApiDetails) {
           return (
             <APIDetailsPage
               apiName={selectedApiDetails}
               onBack={() => setSelectedApiDetails(null)}
-              breadcrumbParent="Portals"
+              breadcrumbParent="API catalog"
             />
           );
         }
-        if (selectedPortal === 'Internal portal') {
-          return <PortalPage onApiNameClick={setSelectedApiDetails} onBack={() => setSelectedPortal(null)} />;
-        }
-        if (selectedPortal) {
-          return <PortalDetailPage portalName={selectedPortal} onBack={() => setSelectedPortal(null)} />;
-        }
-        return <PortalsManagementPage onPortalClick={setSelectedPortal} />;
-      case 'api-products':
-        return <APIProductsPage />;
+        return <PortalPage onApiNameClick={setSelectedApiDetails} />;
       case 'api-access':
-        return <APICredentialsPage />;
-      case 'api-key-approvals':
-        return <APIKeyApprovalsPage />;
-      case 'overview':
-      default:
+        if (selectedApiKey) {
         return (
-          <KuadrantOverview
-            onGatewayNameClick={handleGatewayNameClick}
-            onCreateGateway={handleCreateGateway}
-            onCreateHTTPRoute={handleCreateHTTPRoute}
+          <APIKeyDetailPage
+              credential={selectedApiKey}
+              onBack={() => setSelectedApiKey(null)}
+              revealedKeyIds={revealedKeyIds}
+              onOpenRevealModal={setRevealModalRowId}
+              onOpenEdit={(row) => setEditCredentialId(row.id)}
+              onOpenDelete={(row) => setDeleteCredentialId(row.id)}
+            />
+          );
+        }
+        return (
+          <APICredentialsPage
+            credentialsData={credentialsList}
+            onApiKeyNameClick={setSelectedApiKey}
+            revealedKeyIds={revealedKeyIds}
+            onOpenRevealModal={setRevealModalRowId}
+            onOpenEdit={(row) => setEditCredentialId(row.id)}
+            onOpenDelete={(row) => setDeleteCredentialId(row.id)}
+            onOpenRequestApiKey={() => setRequestApiKeyOpen(true)}
           />
         );
+      case 'api-key-approvals':
+        return <APIKeyApprovalsPage />;
+      default:
+        return <PortalPage onApiNameClick={setSelectedApiDetails} />;
     }
   };
 
   return (
     <Page masthead={masthead} sidebar={sidebar}>
       {renderContent()}
+      <RevealApiKeyModal
+        rowId={revealModalRowId}
+        onClose={() => setRevealModalRowId(null)}
+        onRevealed={(id) => setRevealedKeyIds((prev) => new Set(prev).add(id))}
+      />
+      <EditApiKeyModal
+        credential={editingCredential}
+        isOpen={Boolean(editCredentialId && editingCredential)}
+        onClose={() => setEditCredentialId(null)}
+        onSave={handleEditApiKeySave}
+      />
+      <DeleteApiKeyModal
+        credential={deletingCredential}
+        isOpen={Boolean(deleteCredentialId && deletingCredential)}
+        onClose={() => setDeleteCredentialId(null)}
+        onConfirm={handleDeleteApiKeyConfirm}
+      />
+      <RequestApiKeyModal
+        isOpen={requestApiKeyOpen}
+        onClose={() => setRequestApiKeyOpen(false)}
+        onSubmit={handleRequestApiKeySubmit}
+      />
     </Page>
   );
 };

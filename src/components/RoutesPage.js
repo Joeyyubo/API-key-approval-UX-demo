@@ -160,7 +160,7 @@ const RoutesPage = ({ onCreateHTTPRoute }) => {
     return (
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <Icon style={{ marginRight: '8px' }}>
-          <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+          <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
         </Icon>
         <span>{status}</span>
       </div>

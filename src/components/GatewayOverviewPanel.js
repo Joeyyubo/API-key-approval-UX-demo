@@ -20,7 +20,6 @@ import {
   ClockIcon,
   DollarSignIcon,
   CogIcon,
-  QuestionCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   AngleRightIcon,
@@ -72,12 +71,12 @@ const GatewayOverviewPanel = () => {
             <CardBody>
               <Flex direction={{ default: 'column' }} spaceItems={{ default: 'spaceItemsSm' }}>
                 <FlexItem>
-                  <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                  <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                     8
                   </h1>
                 </FlexItem>
                 <FlexItem>
-                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     Total Gateways
                   </h3>
                 </FlexItem>
@@ -94,18 +93,18 @@ const GatewayOverviewPanel = () => {
                   <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                     <FlexItem>
                       <Icon>
-                        <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                        <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                       </Icon>
                     </FlexItem>
                     <FlexItem>
-                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                         6
                       </h1>
                     </FlexItem>
                   </Flex>
                 </FlexItem>
                 <FlexItem>
-                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     Healthy Gateways
                   </h3>
                 </FlexItem>
@@ -122,18 +121,18 @@ const GatewayOverviewPanel = () => {
                   <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                     <FlexItem>
                       <Icon>
-                        <ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" />
+                        <ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" />
                       </Icon>
                     </FlexItem>
                     <FlexItem>
-                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                         2
                       </h1>
                     </FlexItem>
                   </Flex>
                 </FlexItem>
                 <FlexItem>
-                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     Unhealthy Gateways
                   </h3>
                 </FlexItem>
@@ -150,18 +149,18 @@ const GatewayOverviewPanel = () => {
                   <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                     <FlexItem>
                       <Icon>
-                        <ClockIcon color="var(--pf-v5-global--info-color--100)" />
+                        <ClockIcon color="var(--pf-t--global--color--status--info--100)" />
                       </Icon>
                     </FlexItem>
                     <FlexItem>
-                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                      <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                         850ms
                       </h1>
                     </FlexItem>
                   </Flex>
                 </FlexItem>
                 <FlexItem>
-                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-v5-global--color--200)' }}>
+                  <h3 style={{ fontWeight: 'bold', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     Avg Latency
                   </h3>
                 </FlexItem>
@@ -187,11 +186,11 @@ const GatewayOverviewPanel = () => {
               <span style={{ color: '#0066cc', fontSize: '16px', fontWeight: '500' }}>3.2K/min</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+              <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
               <span style={{ color: '#6a6e73', fontSize: '16px' }}>95.2% successful</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon><ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+              <Icon><ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
               <span style={{ color: '#6a6e73', fontSize: '16px' }}>4.8% error</span>
             </div>
           </div>
@@ -238,7 +237,7 @@ const GatewayOverviewPanel = () => {
               <span style={{ color: '#6a6e73', fontSize: '16px' }}>$0.77 Per 1K req</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon><ArrowUpIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+              <Icon><ArrowUpIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
               <span style={{ color: '#28a745', fontSize: '16px' }}>+18%</span>
             </div>
           </div>
@@ -354,7 +353,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Average Latency</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowUpIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+                    <Icon><ArrowUpIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>5%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>810ms → 850ms</span>
@@ -365,7 +364,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>P95 Latency</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowUpIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+                    <Icon><ArrowUpIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>8%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>1.8s → 1.94s</span>
@@ -376,7 +375,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>P99 Latency</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowDownIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><ArrowDownIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>2%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>4.2s → 4.1s</span>
@@ -519,7 +518,7 @@ const GatewayOverviewPanel = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>gateway-01</span>
-                  <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                  <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                 </div>
                 <span style={{ fontSize: '14px', color: '#6a6e73' }}>CPU: 78% | Memory: 65%</span>
               </div>
@@ -527,7 +526,7 @@ const GatewayOverviewPanel = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>gateway-02</span>
-                  <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                  <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                 </div>
                 <span style={{ fontSize: '14px', color: '#6a6e73' }}>CPU: 72% | Memory: 58%</span>
               </div>
@@ -535,7 +534,7 @@ const GatewayOverviewPanel = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>gateway-03</span>
-                  <Icon><ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+                  <Icon><ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
                 </div>
                 <span style={{ fontSize: '14px', color: '#6a6e73' }}>CPU: 89% | Memory: 82%</span>
               </div>
@@ -543,7 +542,7 @@ const GatewayOverviewPanel = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>gateway-04</span>
-                  <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                  <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                 </div>
                 <span style={{ fontSize: '14px', color: '#6a6e73' }}>CPU: 45% | Memory: 39%</span>
               </div>
@@ -551,7 +550,7 @@ const GatewayOverviewPanel = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>gateway-05</span>
-                  <Icon><ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+                  <Icon><ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
                 </div>
                 <span style={{ fontSize: '14px', color: '#6a6e73' }}>CPU: 91% | Memory: 76%</span>
               </div>
@@ -577,7 +576,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Overall System Health</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>Good</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>75% of gateways healthy</span>
@@ -588,7 +587,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Active Alerts</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+                    <Icon><ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>3</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>2 high CPU, 1 memory warning</span>
@@ -599,7 +598,7 @@ const GatewayOverviewPanel = () => {
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Uptime</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>99.97%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>Last 30 days</span>

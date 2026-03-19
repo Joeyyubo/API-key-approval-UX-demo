@@ -66,7 +66,6 @@ import {
   EllipsisVIcon,
   ExclamationTriangleIcon,
   CogIcon,
-  QuestionCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   AngleRightIcon,
@@ -74,6 +73,7 @@ import {
   PlusIcon,
   SearchIcon
 } from '@patternfly/react-icons';
+import { FaQuestionCircleRegular } from './FaQuestionCircleRegular';
 
 const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute, onMCPServerPage, onMCPServerAction }) => {
   const [activeTabKey, setActiveTabKey] = useState('details');
@@ -134,7 +134,7 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Icon>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled">
                   Enforced
@@ -142,7 +142,7 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Icon>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="blue" variant="filled">
                   Accepted
@@ -150,7 +150,7 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Icon>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="purple" variant="filled">
                   Programmed
@@ -161,26 +161,26 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
           <FlexItem>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                   3.2K/min
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Current RPS
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--success-color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--success--100)' }}>
                   95.2%
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Success Rate
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--warning-color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--warning--200)' }}>
                   850ms
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                   Avg Latency
                 </div>
               </div>
@@ -331,13 +331,13 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
             <Card>
               <CardBody>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)', marginBottom: '8px' }}>
                     3.2K/min
                   </div>
-                  <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)', marginBottom: '4px' }}>
                     Requests Per Second
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--success-color--100)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--success--100)' }}>
                     <Icon style={{ marginRight: '4px' }}>
                       <ArrowUpIcon />
                     </Icon>
@@ -352,13 +352,13 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
             <Card>
               <CardBody>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-v5-global--success-color--100)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--success--100)', marginBottom: '8px' }}>
                     95.2%
                   </div>
-                  <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)', marginBottom: '4px' }}>
                     Success Rate
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--success-color--100)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--success--100)' }}>
                     <Icon style={{ marginRight: '4px' }}>
                       <ArrowUpIcon />
                     </Icon>
@@ -373,13 +373,13 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
             <Card>
               <CardBody>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-v5-global--warning-color--100)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--warning--200)', marginBottom: '8px' }}>
                     850ms
                   </div>
-                  <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)', marginBottom: '4px' }}>
                     Avg Latency
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--warning-color--100)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--warning--200)' }}>
                     <Icon style={{ marginRight: '4px' }}>
                       <ArrowUpIcon />
                     </Icon>
@@ -394,13 +394,13 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
             <Card>
               <CardBody>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-v5-global--danger-color--100)', marginBottom: '8px' }}>
+                  <div style={{ fontSize: '32px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--danger--100)', marginBottom: '8px' }}>
                     4.8%
                   </div>
-                  <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)', marginBottom: '4px' }}>
                     Error Rate
                   </div>
-                  <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--danger-color--100)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--danger--100)' }}>
                     <Icon style={{ marginRight: '4px' }}>
                       <ArrowUpIcon />
                     </Icon>
@@ -426,10 +426,10 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
                 padding: '16px',
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                   P50
                 </div>
-                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-v5-global--info-color--100)' }}>
+                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-t--global--color--status--info--100)' }}>
                   420ms
                 </div>
               </div>
@@ -442,10 +442,10 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
                 padding: '16px',
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                   P95
                 </div>
-                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-v5-global--warning-color--100)' }}>
+                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-t--global--color--status--warning--200)' }}>
                   1.94s
                 </div>
               </div>
@@ -458,10 +458,10 @@ const GatewayDetailsPage = ({ gatewayName = 'example', onBack, onCreateHTTPRoute
                 padding: '16px',
                 textAlign: 'center'
               }}>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--color--100)' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--text--color--regular)' }}>
                   P99
                 </div>
-                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-v5-global--danger-color--100)' }}>
+                <div style={{ fontSize: '20px', fontWeight: '600', color: 'var(--pf-t--global--color--status--danger--100)' }}>
                   4.1s
                 </div>
               </div>
@@ -639,9 +639,9 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Icon>
-                    <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                    <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                   </Icon>
-                  <span style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     Configuration is valid
                   </span>
                 </div>
@@ -726,7 +726,7 @@ status:
               padding: '4px 8px',
               borderRadius: '4px',
               fontSize: '12px',
-              color: 'var(--pf-v5-global--color--200)'
+              color: 'var(--pf-t--global--text--color--subtle)'
             }}>
               YAML
             </div>
@@ -764,7 +764,7 @@ status:
             </Button>
             <Button variant="secondary" size="sm">
               <Icon style={{ marginRight: '8px' }}>
-                <QuestionCircleIcon />
+                <FaQuestionCircleRegular />
               </Icon>
               View Schema Documentation
             </Button>
@@ -799,7 +799,7 @@ status:
             icon: 'TRL',
             iconColor: 'purple',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'Rate limiting based on OpenAI token usage',
             config: '1000 tokens/minute per user',
@@ -813,7 +813,7 @@ status:
             icon: 'TLSP',
             iconColor: 'orange',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'TLS termination with certificate management',
             config: 'TLS 1.2+, Auto certificate renewal',
@@ -827,7 +827,7 @@ status:
             icon: 'AP',
             iconColor: 'blue',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'JWT-based authentication for API access',
             config: 'JWT validation, Role-based access control',
@@ -846,7 +846,7 @@ status:
             icon: 'AP',
             iconColor: 'blue',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'OAuth2 authentication for MCP services',
             config: 'OAuth2 with PKCE, Session management',
@@ -860,7 +860,7 @@ status:
             icon: 'RLP',
             iconColor: 'cyan',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'Request rate limiting for MCP endpoints',
             config: '100 requests/minute per client',
@@ -874,7 +874,7 @@ status:
             icon: 'TLSP',
             iconColor: 'orange',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'TLS encryption for MCP communication',
             config: 'TLS 1.3, Perfect Forward Secrecy',
@@ -888,7 +888,7 @@ status:
             icon: 'DNSP',
             iconColor: 'purple',
             statusIcon: 'CheckCircleIcon',
-            statusColor: 'var(--pf-v5-global--success-color--100)',
+            statusColor: 'var(--pf-t--global--color--status--success--100)',
             isClickable: true,
             description: 'DNS configuration for MCP service discovery',
             config: 'mcp.example.com, Load balancing',
@@ -907,7 +907,7 @@ status:
           icon: 'AP',
           iconColor: 'blue',
           statusIcon: 'ExclamationTriangleIcon',
-          statusColor: 'var(--pf-v5-global--warning-color--100)',
+          statusColor: 'var(--pf-t--global--color--status--warning--200)',
           isClickable: false,
           description: 'Authentication policy overridden by higher priority policy',
           config: 'Basic Auth, Overridden by namespace policy',
@@ -921,7 +921,7 @@ status:
           icon: 'DNSP',
           iconColor: 'purple',
           statusIcon: 'CheckCircleIcon',
-          statusColor: 'var(--pf-v5-global--success-color--100)',
+          statusColor: 'var(--pf-t--global--color--status--success--100)',
           isClickable: false,
           description: 'DNS routing and load balancing configuration',
           config: 'Round-robin DNS, Health checks enabled',
@@ -935,7 +935,7 @@ status:
           icon: 'RLP',
           iconColor: 'cyan',
           statusIcon: 'ExclamationTriangleIcon',
-          statusColor: 'var(--pf-v5-global--warning-color--100)',
+          statusColor: 'var(--pf-t--global--color--status--warning--200)',
           isClickable: false,
           description: 'Rate limiting policy overridden by gateway-level policy',
           config: '500 requests/minute, Overridden by gateway policy',
@@ -949,7 +949,7 @@ status:
           icon: 'TLSP',
           iconColor: 'orange',
           statusIcon: 'CheckCircleIcon',
-          statusColor: 'var(--pf-v5-global--success-color--100)',
+          statusColor: 'var(--pf-t--global--color--status--success--100)',
           isClickable: false,
           description: 'TLS termination and certificate management',
           config: 'TLS 1.2+, Certificate auto-renewal',
@@ -974,7 +974,7 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Icon>
-                    <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                    <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                   </Icon>
                   <span style={{ fontSize: '16px', fontWeight: '500' }}>
                     {enforcedCount}/{totalCount} Policies Enforced
@@ -1003,10 +1003,10 @@ status:
               <Card>
                 <CardBody>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--info-color--100)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--info--100)', marginBottom: '8px' }}>
                       {policies.filter(p => p.type === 'AuthPolicy').length}
                     </div>
-                    <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                       Authentication Policies
                     </div>
                   </div>
@@ -1017,10 +1017,10 @@ status:
               <Card>
                 <CardBody>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--warning-color--100)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--warning--200)', marginBottom: '8px' }}>
                       {policies.filter(p => p.type === 'TLSPolicy').length}
                     </div>
-                    <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                       TLS Policies
                     </div>
                   </div>
@@ -1031,10 +1031,10 @@ status:
               <Card>
                 <CardBody>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--success-color--100)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--success--100)', marginBottom: '8px' }}>
                       {policies.filter(p => p.type === 'RateLimitPolicy' || p.type === 'TokenRateLimitPolicy').length}
                     </div>
-                    <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                       Rate Limiting Policies
                     </div>
                   </div>
@@ -1045,10 +1045,10 @@ status:
               <Card>
                 <CardBody>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-v5-global--purple-color--100)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--pf-t--global--color--status--info--100)', marginBottom: '8px' }}>
                       {policies.filter(p => p.type === 'DNSPolicy').length}
                     </div>
-                    <div style={{ fontSize: '14px', color: 'var(--pf-v5-global--color--200)' }}>
+                    <div style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                       DNS Policies
                     </div>
                   </div>
@@ -1083,7 +1083,7 @@ status:
                         {policy.name}
                       </Button>
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--color--200)' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                       {policy.description}
                     </div>
                   </div>
@@ -1112,7 +1112,7 @@ status:
                   </div>
                 </Td>
                 <Td>
-                  <div style={{ fontSize: '12px', color: 'var(--pf-v5-global--color--200)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--pf-t--global--text--color--subtle)' }}>
                     {policy.config}
                   </div>
                 </Td>
@@ -1127,7 +1127,7 @@ status:
                 <Td>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <Button variant="plain" size="sm" aria-label="View details">
-                      <Icon><QuestionCircleIcon /></Icon>
+                      <Icon><FaQuestionCircleRegular /></Icon>
                     </Button>
                     <Button variant="plain" size="sm" aria-label="Edit policy">
                       <Icon><EditAltIcon /></Icon>
@@ -1160,11 +1160,11 @@ status:
               <span style={{ color: '#0066cc', fontSize: '16px', fontWeight: '500' }}>900 Total</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon><CheckCircleIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+              <Icon><CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
               <span style={{ color: '#6a6e73', fontSize: '16px' }}>890 successful</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Icon><ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" /></Icon>
+              <Icon><ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" /></Icon>
               <span style={{ color: '#6a6e73', fontSize: '16px' }}>10 error</span>
             </div>
           </div>
@@ -1617,7 +1617,7 @@ status:
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Completion token</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowUpIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><ArrowUpIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>15%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>21.9K → 24.1K</span>
@@ -1628,7 +1628,7 @@ status:
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Prompt token</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowDownIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><ArrowDownIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>9%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>35.9K → 33.7K</span>
@@ -1639,7 +1639,7 @@ status:
                 <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Total token</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Icon><ArrowUpIcon color="var(--pf-v5-global--success-color--100)" /></Icon>
+                    <Icon><ArrowUpIcon color="var(--pf-t--global--color--status--success--100)" /></Icon>
                     <span style={{ fontSize: '20px', fontWeight: '600' }}>1%</span>
                   </div>
                   <span style={{ fontSize: '14px', color: '#6a6e73' }}>57.8K → 58.4K</span>
@@ -1701,21 +1701,21 @@ status:
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>Completion tokens</span>
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </div>
                 <span style={{ fontSize: '16px', fontWeight: '600' }}>24.1K</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>Prompt tokens</span>
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </div>
                 <span style={{ fontSize: '16px', fontWeight: '600' }}>33.7K</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '14px', fontWeight: '500' }}>Total tokens</span>
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </div>
                 <span style={{ fontSize: '16px', fontWeight: '600' }}>57.8K</span>
               </div>
@@ -1808,7 +1808,7 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>Timestamp</span>
                 <Button variant="plain" aria-label="Info">
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </Button>
               </div>
             </Th>
@@ -1816,7 +1816,7 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>Status</span>
                 <Button variant="plain" aria-label="Info">
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </Button>
               </div>
             </Th>
@@ -1824,7 +1824,7 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>User</span>
                 <Button variant="plain" aria-label="Info">
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </Button>
               </div>
             </Th>
@@ -1833,7 +1833,7 @@ status:
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>Token usage</span>
                 <Button variant="plain" aria-label="Info">
-                  <Icon><QuestionCircleIcon /></Icon>
+                  <Icon><FaQuestionCircleRegular /></Icon>
                 </Button>
               </div>
             </Th>
@@ -1846,7 +1846,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1867,7 +1867,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1888,7 +1888,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1909,7 +1909,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1930,7 +1930,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1951,7 +1951,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1972,7 +1972,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -1993,7 +1993,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -2014,7 +2014,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -2035,7 +2035,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <Label color="green" variant="filled" isCompact>
                   Success
@@ -2115,7 +2115,7 @@ status:
             <Td>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Icon style={{ marginRight: '8px' }}>
-                  <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+                  <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
                 </Icon>
                 <span>Accepted</span>
               </div>
@@ -2481,10 +2481,10 @@ status:
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Icon style={{ color: 'var(--pf-v5-global--success-color--100)' }}>
+                <Icon style={{ color: 'var(--pf-t--global--color--status--success--100)' }}>
                   <CheckCircleIcon />
                 </Icon>
-                <span style={{ fontSize: '12px', color: 'var(--pf-v5-global--success-color--100)' }}>{connection.status}</span>
+                <span style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--success--100)' }}>{connection.status}</span>
               </div>
             </div>
             
@@ -2967,10 +2967,10 @@ status:
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Icon style={{ color: 'var(--pf-v5-global--success-color--100)' }}>
+            <Icon style={{ color: 'var(--pf-t--global--color--status--success--100)' }}>
               <CheckCircleIcon />
             </Icon>
-            <span style={{ fontSize: '12px', color: 'var(--pf-v5-global--success-color--100)' }}>{server.status}</span>
+            <span style={{ fontSize: '12px', color: 'var(--pf-t--global--color--status--success--100)' }}>{server.status}</span>
           </div>
         </div>
         
@@ -3423,7 +3423,7 @@ status:
       <Modal
         isOpen={isAddServerModalOpen}
         onClose={() => setIsAddServerModalOpen(false)}
-        variant="large"
+        variant="small"
         title="Add MCP Server"
       >
         <ModalHeader>
@@ -3627,7 +3627,7 @@ status:
       <Modal
         isOpen={isServerDetailsModalOpen}
         onClose={() => setIsServerDetailsModalOpen(false)}
-        variant="large"
+        variant="small"
         title="Server Details"
       >
         <ModalHeader>

@@ -177,9 +177,9 @@ const GatewayTable = ({ onGatewayNameClick, activeTabKey }) => {
         <FlexItem>
           <Icon>
             {isEnforced ? (
-              <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+              <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
             ) : (
-              <ExclamationTriangleIcon color="var(--pf-v5-global--warning-color--100)" />
+              <ExclamationTriangleIcon color="var(--pf-t--global--color--status--warning--200)" />
             )}
           </Icon>
         </FlexItem>
@@ -304,7 +304,7 @@ const GatewayTable = ({ onGatewayNameClick, activeTabKey }) => {
           {filteredGateways.map((gateway, rowIndex) => (
             <Tr key={rowIndex}>
               <Td>
-                <Icon style={{ marginRight: '8px', color: 'var(--pf-v5-global--primary-color--100)' }}>
+                <Icon style={{ marginRight: '8px', color: 'var(--pf-t--global--color--brand--200)' }}>
                   <CheckCircleIcon />
                 </Icon>
                 {(gateway.name === 'Gateway example' || gateway.name === 'MCP demo gateway') ? (

@@ -140,7 +140,7 @@ const KuadrantOverview = ({ onGatewayNameClick, onCreateGateway, onCreateHTTPRou
   const renderRouteStatus = (status) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <Icon style={{ marginRight: '8px' }}>
-        <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />
+        <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />
       </Icon>
       <span>{status}</span>
     </div>
@@ -167,33 +167,33 @@ const KuadrantOverview = ({ onGatewayNameClick, onCreateGateway, onCreateHTTPRou
                       <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                         <FlexItem>
                           <Icon>
-                            <ServerIcon color="var(--pf-v5-global--primary-color--100)" />
+                            <ServerIcon color="var(--pf-t--global--color--brand--200)" />
                           </Icon>
                         </FlexItem>
                         <FlexItem>
-                          <h3 style={{ color: 'var(--pf-v5-global--primary-color--100)', fontWeight: 'bold' }}>
+                          <h3 style={{ color: 'var(--pf-t--global--color--brand--200)', fontWeight: 'bold' }}>
                             Impact
                           </h3>
                         </FlexItem>
                       </Flex>
                     </FlexItem>
                     <FlexItem>
-                      <p style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <p style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         Impact scope
                       </p>
                     </FlexItem>
                     <FlexItem>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--pf-v5-global--primary-color--100)', fontSize: '24px', fontWeight: '600' }}>
+                        <span style={{ color: 'var(--pf-t--global--color--brand--200)', fontSize: '24px', fontWeight: '600' }}>
                           95%
                         </span>
-                        <span style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                        <span style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                           Coverage
                         </span>
                       </div>
                     </FlexItem>
                     <FlexItem>
-                      <div style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <div style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         <div>• 8 active gateways</div>
                         <div>• 16 policies enforced</div>
                         <div>• 3 namespaces</div>
@@ -212,33 +212,33 @@ const KuadrantOverview = ({ onGatewayNameClick, onCreateGateway, onCreateHTTPRou
                       <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                         <FlexItem>
                           <Icon>
-                            <SecurityIcon color="var(--pf-v5-global--success-color--100)" />
+                            <SecurityIcon color="var(--pf-t--global--color--status--success--100)" />
                           </Icon>
                         </FlexItem>
                         <FlexItem>
-                          <h3 style={{ color: 'var(--pf-v5-global--success-color--100)', fontWeight: 'bold' }}>
+                          <h3 style={{ color: 'var(--pf-t--global--color--status--success--100)', fontWeight: 'bold' }}>
                             Stability
                           </h3>
                         </FlexItem>
                       </Flex>
                     </FlexItem>
                     <FlexItem>
-                      <p style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <p style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         System status
                       </p>
                     </FlexItem>
                     <FlexItem>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--pf-v5-global--success-color--100)', fontSize: '24px', fontWeight: '600' }}>
+                        <span style={{ color: 'var(--pf-t--global--color--status--success--100)', fontSize: '24px', fontWeight: '600' }}>
                           99.9%
                         </span>
-                        <span style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                        <span style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                           Uptime
                         </span>
                       </div>
                     </FlexItem>
                     <FlexItem>
-                      <div style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <div style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         <div>• Average latency 850ms</div>
                         <div>• 0 critical errors</div>
                         <div>• Health checks passing</div>
@@ -257,33 +257,33 @@ const KuadrantOverview = ({ onGatewayNameClick, onCreateGateway, onCreateHTTPRou
                       <Flex spaceItems={{ default: 'spaceItemsXs' }} alignItems={{ default: 'alignItemsCenter' }}>
                         <FlexItem>
                           <Icon>
-                            <ChartLineIcon color="var(--pf-v5-global--warning-color--100)" />
+                            <ChartLineIcon color="var(--pf-t--global--color--status--warning--200)" />
                           </Icon>
                         </FlexItem>
                         <FlexItem>
-                          <h3 style={{ color: 'var(--pf-v5-global--warning-color--100)', fontWeight: 'bold' }}>
+                          <h3 style={{ color: 'var(--pf-t--global--color--status--warning--200)', fontWeight: 'bold' }}>
                             Value
                           </h3>
                         </FlexItem>
                       </Flex>
                     </FlexItem>
                     <FlexItem>
-                      <p style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <p style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         Business impact
                       </p>
                     </FlexItem>
                     <FlexItem>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ color: 'var(--pf-v5-global--warning-color--100)', fontSize: '24px', fontWeight: '600' }}>
+                        <span style={{ color: 'var(--pf-t--global--color--status--warning--200)', fontSize: '24px', fontWeight: '600' }}>
                           $2,450
                         </span>
-                        <span style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                        <span style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                           Monthly savings
                         </span>
                       </div>
                     </FlexItem>
                     <FlexItem>
-                      <div style={{ color: 'var(--pf-v5-global--Color--200)', fontSize: '14px' }}>
+                      <div style={{ color: 'var(--pf-t--global--text--color--subtle)', fontSize: '14px' }}>
                         <div>• 40% throughput increase</div>
                         <div>• 25% response time improvement</div>
                         <div>• 78% resource utilization</div>

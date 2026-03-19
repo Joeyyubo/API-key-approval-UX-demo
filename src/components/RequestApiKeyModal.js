@@ -1,0 +1,387 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Form,
+  FormGroup,
+  TextInput,
+  TextArea,
+  Select,
+  SelectOption,
+  MenuToggle,
+  Label,
+  Flex,
+  Icon,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Dropdown,
+  DropdownList,
+  DropdownItem,
+  SearchInput,
+  Content,
+  ContentVariants,
+  Popover,
+  Tooltip
+} from '@patternfly/react-core';
+import { CheckIcon } from '@patternfly/react-icons';
+import { EDIT_MODAL_TIER_OPTIONS, REQUESTABLE_API_NAMES } from '../data/apiCredentialsModel';
+import { QuestionCircleHelpTrigger } from './QuestionCircleHelpTrigger';
+
+/**
+ * Request a new API key — same modal width as Edit API key (`variant="small"`).
+ * Tier stays disabled until an API is selected.
+ */
+const RequestApiKeyModal = ({ isOpen, onClose, onSubmit }) => {
+  const [api, setApi] = useState('');
+  const [tier, setTier] = useState('');
+  const [name, setName] = useState('');
+  const [useCase, setUseCase] = useState('');
+  const [apiSelectOpen, setApiSelectOpen] = useState(false);
+  const [apiSearchQuery, setApiSearchQuery] = useState('');
+  const [tierSelectOpen, setTierSelectOpen] = useState(false);
+
+  const tierEnabled = Boolean(api);
+
+  useEffect(() => {
+    if (isOpen) {
+      setApi('');
+      setTier('');
+      setName('');
+      setUseCase('');
+      setApiSelectOpen(false);
+      setApiSearchQuery('');
+      setTierSelectOpen(false);
+    }
+  }, [isOpen]);
+
+  const filteredApiNames = useMemo(() => {
+    const q = apiSearchQuery.trim().toLowerCase();
+    if (!q) return REQUESTABLE_API_NAMES;
+    return REQUESTABLE_API_NAMES.filter((n) => n.toLowerCase().includes(q));
+  }, [apiSearchQuery]);
+
+  const handleApiSelect = (_event, selection) => {
+    setApi(selection);
+    setTier('');
+    setApiSelectOpen(false);
+    setApiSearchQuery('');
+    setTierSelectOpen(false);
+  };
+
+  const handleApiDropdownOpenChange = (open) => {
+    setApiSelectOpen(open);
+    if (!open) {
+      setApiSearchQuery('');
+    }
+  };
+
+  const handleTierSelect = (_event, selection) => {
+    setTier(selection);
+    setTierSelectOpen(false);
+  };
+
+  const handleRequest = () => {
+    if (!api || !tier) return;
+    const trimmedName = name.trim();
+    const trimmedUseCase = useCase.trim();
+    onSubmit({
+      api,
+      tier,
+      name: trimmedName || undefined,
+      useCase: trimmedUseCase
+    });
+    onClose();
+  };
+
+  const selectedTierMeta = EDIT_MODAL_TIER_OPTIONS.find((o) => o.value === tier);
+
+  const tierToggleDisplay = selectedTierMeta ? (
+    <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }} flexWrap={{ default: 'wrap' }}>
+      <Label variant="outline" isCompact>
+        {tier}
+      </Label>
+      <span style={{ color: 'var(--pf-t--global--text--color--regular)' }}>{selectedTierMeta.description}</span>
+    </Flex>
+  ) : (
+    'Select...'
+  );
+
+  const apiToggleDisplay = api || 'Select...';
+
+  const canRequest = Boolean(api && tier);
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} variant="small" aria-labelledby="request-api-key-title">
+      <ModalHeader title="Request API key" labelId="request-api-key-title" />
+      <ModalBody>
+        <Content
+          component={ContentVariants.p}
+          style={{ marginBottom: 'var(--pf-t--global--spacer--lg)', color: 'var(--pf-t--global--text--color--subtle)' }}
+        >
+          Provide details to request a new API key for accessing APIs.
+        </Content>
+        <Form
+          id="request-api-key-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleRequest();
+          }}
+        >
+          <FormGroup role="group" label="API" isRequired fieldId="request-api-key-api">
+            <div style={{ width: '100%' }}>
+              <Dropdown
+                isOpen={apiSelectOpen}
+                onOpenChange={handleApiDropdownOpenChange}
+                onSelect={(_e, value) => {
+                  if (value) {
+                    handleApiSelect(_e, value);
+                  }
+                }}
+                toggle={(toggleRef) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    onClick={() => setApiSelectOpen((prev) => !prev)}
+                    isExpanded={apiSelectOpen}
+                    variant="default"
+                    id="request-api-key-api-toggle"
+                    aria-label="API"
+                    isFullWidth
+                    isPlaceholder={!api}
+                  >
+                    {api ? (
+                      <Tooltip content={api}>
+                        <span
+                          tabIndex={0}
+                          style={{
+                            textAlign: 'start',
+                            width: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: 'block'
+                          }}
+                        >
+                          {apiToggleDisplay}
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <span
+                        style={{
+                          textAlign: 'start',
+                          width: '100%',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: 'block'
+                        }}
+                      >
+                        {apiToggleDisplay}
+                      </span>
+                    )}
+                  </MenuToggle>
+                )}
+                isScrollable
+                maxMenuHeight="16rem"
+                shouldFocusFirstItemOnOpen={false}
+              >
+              <div
+                style={{
+                  padding: 'var(--pf-t--global--spacer--sm)',
+                  borderBottom: '1px solid var(--pf-t--global--border--color--default)'
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <SearchInput
+                  id="request-api-key-api-search"
+                  placeholder="Find by API"
+                  value={apiSearchQuery}
+                  onChange={(_e, v) => setApiSearchQuery(v)}
+                  onClear={() => setApiSearchQuery('')}
+                  aria-label="Find by API"
+                  style={{ width: '100%' }}
+                />
+              </div>
+              {filteredApiNames.length > 0 ? (
+                <DropdownList>
+                  {filteredApiNames.map((n) => (
+                    <DropdownItem key={n} value={n}>
+                      {n}
+                    </DropdownItem>
+                  ))}
+                </DropdownList>
+              ) : (
+                <div
+                  style={{
+                    padding: 'var(--pf-t--global--spacer--md)',
+                    maxWidth: '100%',
+                    textAlign: 'center'
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      color: 'var(--pf-t--global--text--color--subtle)',
+                      fontSize: 'var(--pf-t--global--font--size--body--default)'
+                    }}
+                  >
+                    No results match your search.
+                  </p>
+                </div>
+              )}
+              </Dropdown>
+            </div>
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>Select an API. Submit a separate request for each additional API.</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+
+          <FormGroup
+            role="group"
+            label="Tier"
+            isRequired
+            fieldId="request-api-key-tier"
+            labelHelp={
+              <Popover
+                aria-label="Tier"
+                headerContent="Tier"
+                showClose
+                closeBtnAriaLabel="Close"
+                position="right"
+                bodyContent={
+                  <p style={{ margin: 0 }}>
+                    A Tier is a set of rate limits defined within the PlanPolicy.
+                  </p>
+                }
+              >
+                <QuestionCircleHelpTrigger aria-label="More information about tier" />
+              </Popover>
+            }
+          >
+            <div style={{ width: '100%' }}>
+              <Select
+                id="request-api-key-tier"
+                isOpen={tierEnabled && tierSelectOpen}
+                selected={tierEnabled ? tier || undefined : undefined}
+                onSelect={handleTierSelect}
+                onOpenChange={(open) => tierEnabled && setTierSelectOpen(open)}
+                toggle={(toggleRef) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    isDisabled={!tierEnabled}
+                    onClick={() => tierEnabled && setTierSelectOpen((prev) => !prev)}
+                    isExpanded={tierEnabled && tierSelectOpen}
+                    variant="default"
+                    id="request-api-key-tier-toggle"
+                    aria-label="Tier"
+                    isFullWidth
+                    isPlaceholder={!tierEnabled || !tier}
+                  >
+                    {tierEnabled ? (
+                      <div
+                        style={{
+                          textAlign: 'start',
+                          width: '100%',
+                          minWidth: 0,
+                          overflow: 'hidden'
+                        }}
+                      >
+                        {tierToggleDisplay}
+                      </div>
+                    ) : (
+                      <span style={{ display: 'block', textAlign: 'start', width: '100%' }}>
+                        Select an API first...
+                      </span>
+                    )}
+                  </MenuToggle>
+                )}
+              >
+              {EDIT_MODAL_TIER_OPTIONS.map((opt) => (
+                <SelectOption key={opt.value} value={opt.value}>
+                  <Flex
+                    justifyContent={{ default: 'justifyContentSpaceBetween' }}
+                    alignItems={{ default: 'alignItemsCenter' }}
+                    gap={{ default: 'gapMd' }}
+                    style={{ width: '100%' }}
+                  >
+                    <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapSm' }} flexWrap={{ default: 'wrap' }}>
+                      <Label variant="outline" isCompact>
+                        {opt.value}
+                      </Label>
+                      <span style={{ color: 'var(--pf-t--global--text--color--regular)' }}>{opt.description}</span>
+                    </Flex>
+                    {tier === opt.value ? (
+                      <Icon size="sm" status="info">
+                        <CheckIcon />
+                      </Icon>
+                    ) : (
+                      <span style={{ width: '1.25rem', flexShrink: 0 }} aria-hidden />
+                    )}
+                  </Flex>
+                </SelectOption>
+              ))}
+              </Select>
+            </div>
+            {tierEnabled ? (
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem>
+                    Select a tier to define the usage limits for this API key.
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            ) : null}
+          </FormGroup>
+
+          <FormGroup role="group" label="API key name" fieldId="request-api-key-name">
+            <TextInput
+              id="request-api-key-name"
+              value={name}
+              onChange={(_e, v) => setName(v)}
+              aria-label="API key name"
+              style={{ width: '100%' }}
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>
+                  A unique name to identify this key. If left blank, a name is automatically generated.
+                </HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+
+          <FormGroup role="group" label="Use case" fieldId="request-api-key-use-case">
+            <TextArea
+              id="request-api-key-use-case"
+              value={useCase}
+              onChange={(_e, v) => setUseCase(v)}
+              aria-label="Use case"
+              rows={3}
+              resizeOrientation="both"
+              style={{ width: '100%' }}
+            />
+            <FormHelperText>
+              <HelperText>
+                <HelperTextItem>A brief description of how you intend to use this API key.</HelperTextItem>
+              </HelperText>
+            </FormHelperText>
+          </FormGroup>
+        </Form>
+      </ModalBody>
+      <ModalFooter>
+        <Button key="request" variant="primary" type="submit" form="request-api-key-form" isDisabled={!canRequest}>
+          Request
+        </Button>
+        <Button key="cancel" variant="link" onClick={onClose}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+
+export default RequestApiKeyModal;

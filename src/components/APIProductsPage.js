@@ -55,7 +55,7 @@ const APIProductsPage = () => {
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} alignItems={{ default: 'alignItemsFlexStart' }}>
           <FlexItem>
             <Title headingLevel="h1" size="2xl">API products</Title>
-            <p style={{ marginTop: '8px', color: 'var(--pf-v5-global--Color--200)' }}>
+            <p style={{ marginTop: '8px', color: 'var(--pf-t--global--text--color--subtle)' }}>
               Create and publish your API product to portal.
             </p>
           </FlexItem>
@@ -139,7 +139,7 @@ const APIProductsPage = () => {
                 <Td>
                   <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapXs' }}>
                     <Icon>
-                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-v5-global--Color--200)' }} />
+                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }} />
                     </Icon>
                     <span>{row.status}</span>
                   </Flex>

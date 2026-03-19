@@ -112,13 +112,13 @@ const MCPServerTestConnectionPage = ({ serverName = 'Desktop Commander', onBack,
   const getStatusIcon = (status) => {
     switch (status) {
       case 'success':
-        return <CheckCircleIcon color="var(--pf-v5-global--success-color--100)" />;
+        return <CheckCircleIcon color="var(--pf-t--global--color--status--success--100)" />;
       case 'error':
-        return <ExclamationTriangleIcon color="var(--pf-v5-global--danger-color--100)" />;
+        return <ExclamationTriangleIcon color="var(--pf-t--global--color--status--danger--100)" />;
       case 'running':
-        return <ClockIcon color="var(--pf-v5-global--info-color--100)" />;
+        return <ClockIcon color="var(--pf-t--global--color--status--info--100)" />;
       default:
-        return <ClockIcon color="var(--pf-v5-global--Color--200)" />;
+        return <ClockIcon color="var(--pf-t--global--text--color--subtle)" />;
     }
   };
 

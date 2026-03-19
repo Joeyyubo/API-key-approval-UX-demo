@@ -73,7 +73,7 @@ const PortalDetailPage = ({ portalName, onBack }) => {
             isLink
             style={{ color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
           >
-            Portals
+            API catalog
           </BreadcrumbItem>
           <BreadcrumbItem isActive>{portalName}</BreadcrumbItem>
         </Breadcrumb>
@@ -86,7 +86,7 @@ const PortalDetailPage = ({ portalName, onBack }) => {
               href={portalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'var(--pf-v5-global--link--Color)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              style={{ color: 'var(--pf-t--global--text--color--link--default)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
               <LinkIcon style={{ fontSize: '14px' }} />
               {portalUrl}
@@ -163,7 +163,7 @@ const PortalDetailPage = ({ portalName, onBack }) => {
 
       <PageSection>
         {activeTabKey === 'overview' && (
-          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+          <p style={{ color: 'var(--pf-t--global--text--color--subtle)' }}>
             Overview of {portalName}. Summary and key metrics will appear here.
           </p>
         )}
@@ -190,7 +190,7 @@ const PortalDetailPage = ({ portalName, onBack }) => {
                 <Td>
                   <Flex alignItems={{ default: 'alignItemsCenter' }} gap={{ default: 'gapXs' }}>
                     <Icon>
-                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-v5-global--Color--200)' }} />
+                      <CodeBranchIcon style={{ fontSize: '14px', color: 'var(--pf-t--global--text--color--subtle)' }} />
                     </Icon>
                     <span>{row.status}</span>
                   </Flex>
@@ -229,12 +229,12 @@ const PortalDetailPage = ({ portalName, onBack }) => {
         </Table>
         )}
         {activeTabKey === 'editor' && (
-          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+          <p style={{ color: 'var(--pf-t--global--text--color--subtle)' }}>
             Editor for {portalName}. Configure portal content and layout here.
           </p>
         )}
         {activeTabKey === 'settings' && (
-          <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+          <p style={{ color: 'var(--pf-t--global--text--color--subtle)' }}>
             Settings for {portalName}. Manage portal configuration and preferences.
           </p>
         )}
