@@ -2,16 +2,6 @@
 
 A React application for the RHCL developer portal console experience using PatternFly 6, including Kuadrant-style overview and related flows (OpenShift console plugin prototype).
 
-## Git remote (after renaming on GitHub)
-
-GitHub **repository names cannot contain spaces**. Use a URL-safe slug such as **`rhcl-dev-portal-feature`**, then point your local `origin` at the new URL:
-
-```bash
-git remote set-url origin git@github.com:Joeyyubo/rhcl-dev-portal-feature.git
-```
-
-(Replace `Joeyyubo` / repo slug if yours differ.)
-
 ## Features
 
 - **Authentic Layout**: Reproduces the exact layout from the OpenShift console with navigation sidebar and header
