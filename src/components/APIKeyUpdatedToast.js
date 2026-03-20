@@ -6,24 +6,14 @@ import {
   Button
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import ApiKeyToastFrame from './ApiKeyToastFrame';
 
 /**
- * Fixed top-right info notice after Edit API key (PatternFly info alert).
+ * Info notice after Edit API key (PatternFly info alert).
+ * Renders below masthead; auto-dismisses after PatternFly-style interval.
  */
 const APIKeyUpdatedToast = ({ api, keyName, updates, onClose, onViewDetails }) => (
-  <div
-    role="region"
-    aria-label="API key updated"
-    style={{
-      position: 'fixed',
-      top: 'var(--pf-t--global--spacer--md)',
-      right: 'var(--pf-t--global--spacer--md)',
-      zIndex: 600,
-      width: 'min(calc(100vw - var(--pf-t--global--spacer--xl)), 22rem)',
-      maxWidth: '100%',
-      pointerEvents: 'auto'
-    }}
-  >
+  <ApiKeyToastFrame aria-label="API key updated" onClose={onClose}>
     <Alert
       variant={AlertVariant.info}
       isLiveRegion
@@ -55,7 +45,7 @@ const APIKeyUpdatedToast = ({ api, keyName, updates, onClose, onViewDetails }) =
         {updates}
       </div>
     </Alert>
-  </div>
+  </ApiKeyToastFrame>
 );
 
 export default APIKeyUpdatedToast;

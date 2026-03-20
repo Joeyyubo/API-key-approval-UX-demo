@@ -274,7 +274,7 @@ const APICredentialsPage = ({
               isExpanded={projectOpen}
               variant="default"
             >
-              Project: All Projects
+              Project
             </MenuToggle>
           )}
         >

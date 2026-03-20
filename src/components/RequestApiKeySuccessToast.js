@@ -6,24 +6,14 @@ import {
   Button
 } from '@patternfly/react-core';
 import { TimesIcon } from '@patternfly/react-icons';
+import ApiKeyToastFrame from './ApiKeyToastFrame';
 
 /**
- * Fixed top-right success notice after Request API key (PatternFly success alert).
+ * Success notice after Request API key (PatternFly success alert).
+ * Renders below masthead; auto-dismisses after PatternFly-style interval.
  */
 const RequestApiKeySuccessToast = ({ api, keyName, onClose, onViewDetails }) => (
-  <div
-    role="region"
-    aria-label="API key request success"
-    style={{
-      position: 'fixed',
-      top: 'var(--pf-t--global--spacer--md)',
-      right: 'var(--pf-t--global--spacer--md)',
-      zIndex: 600,
-      width: 'min(calc(100vw - var(--pf-t--global--spacer--xl)), 22rem)',
-      maxWidth: '100%',
-      pointerEvents: 'auto'
-    }}
-  >
+  <ApiKeyToastFrame aria-label="API key request success" onClose={onClose}>
     <Alert
       variant={AlertVariant.success}
       isLiveRegion
@@ -46,7 +36,7 @@ const RequestApiKeySuccessToast = ({ api, keyName, onClose, onViewDetails }) => 
         {keyName}
       </div>
     </Alert>
-  </div>
+  </ApiKeyToastFrame>
 );
 
 export default RequestApiKeySuccessToast;

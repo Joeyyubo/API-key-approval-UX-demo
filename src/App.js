@@ -182,14 +182,6 @@ const App = () => {
 
   const dismissDeleteKeyToast = useCallback(() => setDeleteKeySuccessToast(null), []);
 
-  /** Deleted key no longer exists; land on My API keys list. */
-  const handleDeleteSuccessViewDetails = useCallback(() => {
-    setActiveItem('api-access');
-    setSelectedApiDetails(null);
-    setSelectedApiKey(null);
-    setDeleteKeySuccessToast(null);
-  }, []);
-
   const handleDeleteApiKeyConfirm = (id) => {
     const row = credentialsList.find((c) => c.id === id);
     const apiName = row?.api ?? '';
@@ -576,7 +568,6 @@ const App = () => {
           api={deleteKeySuccessToast.api}
           keyName={deleteKeySuccessToast.keyName}
           onClose={dismissDeleteKeyToast}
-          onViewDetails={handleDeleteSuccessViewDetails}
         />
       )}
       <RevealApiKeyModal

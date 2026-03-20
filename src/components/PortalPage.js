@@ -176,7 +176,7 @@ const PortalPage = ({ onApiNameClick, onBack }) => {
               isExpanded={projectOpen}
               variant="default"
             >
-              Project: All Projects
+              Project
             </MenuToggle>
           )}
         >

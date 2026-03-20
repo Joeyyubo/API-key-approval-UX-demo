@@ -7,10 +7,8 @@ import {
   Button,
   Form,
   FormGroup,
-  TextInput,
-  Tooltip
+  TextInput
 } from '@patternfly/react-core';
-import { getApiKeyNameTableDisplay } from './ApiKeyNameText';
 
 /**
  * Delete API key confirmation — typing the exact key name enables Delete.
@@ -30,7 +28,6 @@ const DeleteApiKeyModal = ({ credential, isOpen, onClose, onConfirm }) => {
   }
 
   const { id, name: expectedName } = credential;
-  const nameInLabel = getApiKeyNameTableDisplay(expectedName);
   const trimmed = confirmInput.trim();
   const canDelete = trimmed.length > 0 && trimmed === expectedName;
 
@@ -59,15 +56,8 @@ const DeleteApiKeyModal = ({ credential, isOpen, onClose, onConfirm }) => {
             label={
               <span style={{ fontWeight: 700 }}>
                 Confirm by typing{' '}
-                {nameInLabel.isTruncated ? (
-                  <Tooltip content={nameInLabel.full}>
-                    <span tabIndex={0}>
-                      &ldquo;{nameInLabel.display}&rdquo;
-                    </span>
-                  </Tooltip>
-                ) : (
-                  <>&ldquo;{expectedName}&rdquo;</>
-                )}{' '}
+                <span style={{ wordBreak: 'break-word' }}>&ldquo;{expectedName}&rdquo;</span>
+                {' '}
                 below
               </span>
             }
