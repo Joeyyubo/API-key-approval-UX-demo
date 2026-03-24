@@ -36,6 +36,7 @@ import MCPServerDiscoveryPage from './components/MCPServerDiscoveryPage';
 import MCPServerTestConnectionPage from './components/MCPServerTestConnectionPage';
 import MCPServerLogsPage from './components/MCPServerLogsPage';
 import APIKeyApprovalsPage from './components/APIKeyApprovalsPage';
+import APIKeyTestTabPage from './components/APIKeyTestTabPage';
 import PortalPage from './components/PortalPage';
 import APIDetailsPage from './components/APIDetailsPage';
 import APICredentialsPage from './components/APICredentialsPage';
@@ -227,7 +228,7 @@ const App = () => {
 
   // Auto-expand RHCL API catalog when any of its child items are active
   useEffect(() => {
-    if (['internal-portals', 'api-access', 'api-key-approvals'].includes(activeItem)) {
+    if (['internal-portals', 'api-access', 'api-key-approvals', 'api-key-test-tab'].includes(activeItem)) {
       setIsInternalPortalExpanded(true);
     }
   }, [activeItem]);
@@ -385,7 +386,7 @@ const App = () => {
           title="RHCL API catalog"
           isExpanded={isInternalPortalExpanded}
           onExpand={() => setIsInternalPortalExpanded(!isInternalPortalExpanded)}
-          isActive={['internal-portals', 'api-access', 'api-key-approvals'].includes(activeItem)}
+          isActive={['internal-portals', 'api-access', 'api-key-approvals', 'api-key-test-tab'].includes(activeItem)}
         >
           <NavItem
             itemId="internal-portals"
@@ -414,6 +415,13 @@ const App = () => {
             onClick={() => setActiveItem('api-key-approvals')}
           >
             API key approval
+          </NavItem>
+          <NavItem
+            itemId="api-key-test-tab"
+            isActive={activeItem === 'api-key-test-tab'}
+            onClick={() => setActiveItem('api-key-test-tab')}
+          >
+            Test tab
           </NavItem>
         </NavExpandable>
       </NavList>
@@ -520,6 +528,8 @@ const App = () => {
         );
       case 'api-key-approvals':
         return <APIKeyApprovalsPage onNavigateToApiCatalog={navigateToApiCatalogDetail} />;
+      case 'api-key-test-tab':
+        return <APIKeyTestTabPage />;
       default:
         return <PortalPage onApiNameClick={setSelectedApiDetails} />;
     }
