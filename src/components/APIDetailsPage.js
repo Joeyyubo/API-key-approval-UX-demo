@@ -215,7 +215,7 @@ const dtStyle = {
 const APIDetailsPage = ({
   apiName,
   onBack,
-  breadcrumbParent = 'API catalog',
+  breadcrumbParent = 'API key approval',
   onRequestApiKey,
   /** When set (e.g. from App credentialsList), catalog API keys tab uses live data and delete works. */
   apiKeysRows: apiKeysRowsProp,

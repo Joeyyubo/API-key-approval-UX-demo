@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Button, Tooltip } from '@patternfly/react-core';
 
 /** Max characters shown before "..." for API key names in lists and headings. */
@@ -71,6 +71,65 @@ export function TruncatedTableText({ text, maxLen, style, className }) {
     </span>
   );
   return isTruncated ? <Tooltip content={full}>{span}</Tooltip> : span;
+}
+
+const useCaseTwoLineStyle = {
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  color: 'var(--pf-t--global--text--color--subtle)'
+};
+
+/**
+ * API key approval “Use case” cell: up to two lines with ellipsis.
+ * Tooltip only when content overflows the two-line clamp (ellipsis / hidden remainder), not when it fits fully.
+ */
+export function UseCaseTwoLineCell({ text, style, className }) {
+  const ref = useRef(null);
+  const [isClamped, setIsClamped] = useState(false);
+  const full = text == null ? '' : String(text);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const node = ref.current;
+      if (!node) return;
+      const sh = node.scrollHeight;
+      const ch = node.clientHeight;
+      // Subpixel / late layout: any real overflow beyond the clamped box
+      setIsClamped(sh > ch + 0.5);
+    };
+    update();
+    let raf1 = 0;
+    let raf2 = 0;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(update);
+    });
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(update) : null;
+    ro?.observe(el);
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      ro?.disconnect();
+    };
+  }, [full]);
+
+  const span = (
+    <span
+      ref={ref}
+      style={{ ...useCaseTwoLineStyle, ...style }}
+      className={className}
+      tabIndex={isClamped ? 0 : undefined}
+    >
+      {full}
+    </span>
+  );
+
+  return isClamped ? <Tooltip content={full}>{span}</Tooltip> : span;
 }
 
 /**

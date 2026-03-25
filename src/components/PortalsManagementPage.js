@@ -20,7 +20,7 @@ import {
 import { FileIcon, EllipsisVIcon, ArrowRightIcon } from '@patternfly/react-icons';
 
 const PORTALS = [
-  { id: 'internal', name: 'API catalog', apiCount: 6 },
+  { id: 'internal', name: 'APIs', apiCount: 1 },
   { id: 'ext1', name: 'External portal-1', apiCount: 6 },
   { id: 'ext2', name: 'External portal-2', apiCount: 6 },
   { id: 'ext3', name: 'External portal-3', apiCount: 6 },
@@ -50,7 +50,7 @@ const PortalsManagementPage = ({ onPortalClick }) => {
       <PageSection variant="default">
         <Flex justifyContent={{ default: 'justifyContentSpaceBetween' }} alignItems={{ default: 'alignItemsFlexStart' }}>
           <FlexItem>
-            <Title headingLevel="h1" size="2xl">API catalog</Title>
+            <Title headingLevel="h1" size="2xl">APIs</Title>
             <p style={{ marginTop: '8px', color: 'var(--pf-t--global--text--color--subtle)' }}>
               Manage portal settings and configurations.
             </p>

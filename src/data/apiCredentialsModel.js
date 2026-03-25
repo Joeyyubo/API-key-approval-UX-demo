@@ -7,6 +7,20 @@ import { CATALOG_PRODUCT_NAMES, getCatalogProductByName } from './apiCatalogMode
 export const USE_CASE_EXPANDED_TEXT =
   'Expansion Content, holy cannoli looks like we figured it out, holy cannoli looks like we figured it out, holy cannoli looks like we figured it out, holy ca.';
 
+/** Varied demo use-case copy for tables (short / medium / long). */
+export const USE_CASE_MOCK_SAMPLES = [
+  'Batch sync only.',
+  'Retail POS integration for checkout.',
+  'Short test.',
+  USE_CASE_EXPANDED_TEXT,
+  'Internal analytics dashboard. Read-only.',
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+  'Mobile app.',
+  'Compliance reporting for EU region; requires quarterly reconciliation exports and audit trail access.',
+  'OK',
+  'Partner portal: rate-limited endpoints for tier-two partners, webhook callbacks for subscription lifecycle, optional sandbox testing.'
+];
+
 const KEY_NAMES = [
   'Name of this key',
   'Auth API Key',
@@ -17,12 +31,52 @@ const KEY_NAMES = [
   'Analytics API Credential',
   'Customer Profile Key',
   'Shipping API Key',
-  'Billing API Credential'
+  'Billing API Credential',
+  'Partner Portal Key',
+  'Warehouse Sync Key',
+  'Checkout API v2 Key',
+  'Loyalty Program Key',
+  'Pricing Service Key',
+  'Support Webhook Key'
 ];
 
-const STATUSES = ['Active', 'Pending', 'Active', 'Rejected', 'Active', 'Pending', 'Active', 'Rejected', 'Active', 'Pending'];
+const STATUSES = [
+  'Active',
+  'Pending',
+  'Active',
+  'Rejected',
+  'Active',
+  'Pending',
+  'Active',
+  'Rejected',
+  'Active',
+  'Pending',
+  'Pending',
+  'Pending',
+  'Pending',
+  'Active',
+  'Rejected',
+  'Pending'
+];
 
-const TIERS = ['Low', 'High', 'Silver', 'Bronze', 'Gold', 'New', 'Old', 'Gold', 'Silver', 'Bronze'];
+const TIERS = [
+  'Low',
+  'High',
+  'Silver',
+  'Bronze',
+  'Gold',
+  'New',
+  'Old',
+  'Gold',
+  'Silver',
+  'Bronze',
+  'Gold',
+  'Silver',
+  'Bronze',
+  'High',
+  'Low',
+  'New'
+];
 
 /** Varied owners for My API keys / approvals / API catalog (mix of names and email-style IDs). */
 export const CREDENTIAL_OWNERS = [
@@ -57,7 +111,24 @@ export const REQUESTABLE_API_NAMES = [...new Set([...CATALOG_PRODUCT_NAMES, ...R
   a.localeCompare(b)
 );
 
-const API_KEY_STATES = ['viewed', 'masked', 'generating', 'empty', 'masked', 'viewed', 'generating', 'empty', 'masked', 'viewed'];
+const API_KEY_STATES = [
+  'viewed',
+  'masked',
+  'generating',
+  'empty',
+  'masked',
+  'viewed',
+  'generating',
+  'empty',
+  'masked',
+  'viewed',
+  'masked',
+  'masked',
+  'viewed',
+  'generating',
+  'masked',
+  'viewed'
+];
 
 const REJECTION_REASONS = [
   null,
@@ -68,6 +139,12 @@ const REJECTION_REASONS = [
   null,
   null,
   'Policy mismatch. The requested scope is not approved for this API.',
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
   null,
   null
 ];
@@ -117,7 +194,7 @@ export const API_KEY_NAME_DUPLICATE_ERROR =
 
 export function buildCredentialsData() {
   return KEY_NAMES.map((name, i) => {
-    const apiName = CATALOG_PRODUCT_NAMES[i];
+    const apiName = CATALOG_PRODUCT_NAMES[i % CATALOG_PRODUCT_NAMES.length];
     const catalog = getCatalogProductByName(apiName);
     return {
     id: `cred-${i}`,
@@ -129,7 +206,7 @@ export function buildCredentialsData() {
     apiKeyState: API_KEY_STATES[i],
     requestedTime: REQUESTED_TIME_DISPLAY,
     rejectionReason: REJECTION_REASONS[i] || undefined,
-    useCase: USE_CASE_EXPANDED_TEXT
+    useCase: USE_CASE_MOCK_SAMPLES[i % USE_CASE_MOCK_SAMPLES.length]
   };
   });
 }

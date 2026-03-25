@@ -33,7 +33,6 @@ import {
   CheckCircleIcon,
   PendingIcon,
   ExclamationCircleIcon,
-  ExclamationTriangleIcon,
   AngleRightIcon,
   AngleDownIcon
 } from '@patternfly/react-icons';
@@ -141,15 +140,8 @@ const CatalogApiKeysTabPanel = ({ rows, onOpenDelete }) => {
   const renderStatus = (status) => {
     const isActive = status === 'Active';
     const isPending = status === 'Pending';
-    const isRejected = status === 'Rejected';
-    const iconStatus = isActive ? 'success' : isPending ? 'info' : isRejected ? 'warning' : 'danger';
-    const StatusIcon = isActive
-      ? CheckCircleIcon
-      : isPending
-        ? PendingIcon
-        : isRejected
-          ? ExclamationTriangleIcon
-          : ExclamationCircleIcon;
+    const iconStatus = isActive ? 'success' : isPending ? 'info' : 'danger';
+    const StatusIcon = isActive ? CheckCircleIcon : isPending ? PendingIcon : ExclamationCircleIcon;
     return (
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
         <Icon size="sm" status={iconStatus} style={{ flexShrink: 0 }}>

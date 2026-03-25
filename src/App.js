@@ -7,15 +7,12 @@ import {
   Nav,
   NavItem,
   NavList,
-  NavExpandable,
   Masthead,
   MastheadToggle,
   MastheadContent,
   PageToggleButton,
   Button,
-  Flex,
-  FlexItem,
-  Title
+  Flex
 } from '@patternfly/react-core';
 import {
   BarsIcon,
@@ -36,11 +33,7 @@ import MCPServerDiscoveryPage from './components/MCPServerDiscoveryPage';
 import MCPServerTestConnectionPage from './components/MCPServerTestConnectionPage';
 import MCPServerLogsPage from './components/MCPServerLogsPage';
 import APIKeyApprovalsPage from './components/APIKeyApprovalsPage';
-import APIKeyTestTabPage from './components/APIKeyTestTabPage';
-import PortalPage from './components/PortalPage';
 import APIDetailsPage from './components/APIDetailsPage';
-import APICredentialsPage from './components/APICredentialsPage';
-import APIKeyDetailPage from './components/APIKeyDetailPage';
 import RevealApiKeyModal from './components/RevealApiKeyModal';
 import EditApiKeyModal from './components/EditApiKeyModal';
 import DeleteApiKeyModal from './components/DeleteApiKeyModal';
@@ -56,8 +49,7 @@ import {
 
 const App = () => {
   const [isNavOpen, setIsNavOpen] = useState(true);
-  const [activeItem, setActiveItem] = useState('internal-portals');
-  const [isInternalPortalExpanded, setIsInternalPortalExpanded] = useState(true);
+  const [activeItem, setActiveItem] = useState('api-key-approvals');
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isAppsDropdownOpen, setIsAppsDropdownOpen] = useState(false);
   const [isGatewayDetailsOpen, setIsGatewayDetailsOpen] = useState(false);
@@ -68,9 +60,7 @@ const App = () => {
   const [mcpServerPageType, setMcpServerPageType] = useState(null); // 'template', 'config', 'discovery'
   const [mcpServerAction, setMcpServerAction] = useState(null); // 'test-connection', 'view-logs'
   const [selectedMCPServer, setSelectedMCPServer] = useState(null);
-  const [selectedApiDetails, setSelectedApiDetails] = useState(null); // API name when viewing API details from Portal
-  const [selectedPortal, setSelectedPortal] = useState(null); // portal name when API owner clicks a portal card
-  const [selectedApiKey, setSelectedApiKey] = useState(null); // credential row when opening API key details (Active / Pending / Rejected)
+  const [selectedApiDetails, setSelectedApiDetails] = useState(null); // API name when viewing API details (e.g. from approvals)
   const [revealedKeyIds, setRevealedKeyIds] = useState(() => new Set());
   const [revealModalRowId, setRevealModalRowId] = useState(null);
   const [credentialsList, setCredentialsList] = useState(() => buildCredentialsData());
@@ -108,9 +98,6 @@ const App = () => {
       }
       return prev.map((r) => (r.id === id ? { ...r, name, tier, useCase, status: 'Pending' } : r));
     });
-    setSelectedApiKey((prev) =>
-      prev && prev.id === id ? { ...prev, name, tier, useCase, status: 'Pending' } : prev
-    );
     setRequestKeySuccessToast(null);
     setDeleteKeySuccessToast(null);
     setEditKeySuccessToast({
@@ -163,10 +150,11 @@ const App = () => {
     if (!requestKeySuccessToast?.credentialId) return;
     const id = requestKeySuccessToast.credentialId;
     const row = credentialsList.find((c) => c.id === id);
-    setActiveItem('api-access');
-    setSelectedApiDetails(null);
     setRequestKeySuccessToast(null);
-    if (row) setSelectedApiKey(row);
+    if (row?.api) {
+      setSelectedApiDetails(row.api);
+      setActiveItem('internal-portals');
+    }
   }, [requestKeySuccessToast, credentialsList]);
 
   const dismissEditKeyToast = useCallback(() => setEditKeySuccessToast(null), []);
@@ -175,10 +163,11 @@ const App = () => {
     if (!editKeySuccessToast?.credentialId) return;
     const id = editKeySuccessToast.credentialId;
     const row = credentialsList.find((c) => c.id === id);
-    setActiveItem('api-access');
-    setSelectedApiDetails(null);
     setEditKeySuccessToast(null);
-    if (row) setSelectedApiKey(row);
+    if (row?.api) {
+      setSelectedApiDetails(row.api);
+      setActiveItem('internal-portals');
+    }
   }, [editKeySuccessToast, credentialsList]);
 
   const dismissDeleteKeyToast = useCallback(() => setDeleteKeySuccessToast(null), []);
@@ -189,7 +178,6 @@ const App = () => {
     const keyName = row?.name ?? '';
 
     setCredentialsList((prev) => prev.filter((r) => r.id !== id));
-    setSelectedApiKey((prev) => (prev?.id === id ? null : prev));
     setRevealedKeyIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -204,9 +192,8 @@ const App = () => {
     setDeleteKeySuccessToast({ api: apiName, keyName });
   };
 
-  /** Jump to API catalog details for the same API name shown in My API keys / approvals. */
+  /** Open API product details for the same API name (e.g. from approvals). */
   const navigateToApiCatalogDetail = (apiName) => {
-    setSelectedApiKey(null);
     setRevealModalRowId(null);
     setEditCredentialId(null);
     setDeleteCredentialId(null);
@@ -226,27 +213,17 @@ const App = () => {
     }
   };
 
-  // Auto-expand RHCL API catalog when any of its child items are active
-  useEffect(() => {
-    if (['internal-portals', 'api-access', 'api-key-approvals', 'api-key-test-tab'].includes(activeItem)) {
-      setIsInternalPortalExpanded(true);
-    }
-  }, [activeItem]);
-
   useEffect(() => {
     if (!requestKeySuccessToast) return;
-    const eligible =
-      (activeItem === 'api-access' && !selectedApiKey) ||
-      (activeItem === 'internal-portals' && selectedApiDetails);
+    const eligible = activeItem === 'internal-portals' && selectedApiDetails;
     if (!eligible) {
       setRequestKeySuccessToast(null);
     }
-  }, [activeItem, selectedApiDetails, selectedApiKey, requestKeySuccessToast]);
+  }, [activeItem, selectedApiDetails, requestKeySuccessToast]);
 
   useEffect(() => {
     if (!editKeySuccessToast) return;
-    const eligible =
-      activeItem === 'api-access' || (activeItem === 'internal-portals' && selectedApiDetails);
+    const eligible = activeItem === 'internal-portals' && selectedApiDetails;
     if (!eligible) {
       setEditKeySuccessToast(null);
     }
@@ -254,8 +231,7 @@ const App = () => {
 
   useEffect(() => {
     if (!deleteKeySuccessToast) return;
-    const eligible =
-      activeItem === 'api-access' || (activeItem === 'internal-portals' && selectedApiDetails);
+    const eligible = activeItem === 'internal-portals' && selectedApiDetails;
     if (!eligible) {
       setDeleteKeySuccessToast(null);
     }
@@ -382,48 +358,16 @@ const App = () => {
   const navigation = (
     <Nav onSelect={onNavSelect} aria-label="Navigation">
       <NavList>
-        <NavExpandable
-          title="RHCL API catalog"
-          isExpanded={isInternalPortalExpanded}
-          onExpand={() => setIsInternalPortalExpanded(!isInternalPortalExpanded)}
-          isActive={['internal-portals', 'api-access', 'api-key-approvals', 'api-key-test-tab'].includes(activeItem)}
+        <NavItem
+          itemId="api-key-approvals"
+          isActive={activeItem === 'api-key-approvals' || activeItem === 'internal-portals'}
+          onClick={() => {
+            setActiveItem('api-key-approvals');
+            setSelectedApiDetails(null);
+          }}
         >
-          <NavItem
-            itemId="internal-portals"
-            isActive={activeItem === 'internal-portals'}
-            onClick={() => {
-              setActiveItem('internal-portals');
-              setSelectedPortal(null);
-              setSelectedApiDetails(null);
-            }}
-          >
-            API catalog
-          </NavItem>
-          <NavItem
-            itemId="api-access"
-            isActive={activeItem === 'api-access'}
-            onClick={() => {
-              setActiveItem('api-access');
-              setSelectedApiKey(null);
-            }}
-          >
-            My API keys
-          </NavItem>
-          <NavItem
-            itemId="api-key-approvals"
-            isActive={activeItem === 'api-key-approvals'}
-            onClick={() => setActiveItem('api-key-approvals')}
-          >
-            API key approval
-          </NavItem>
-          <NavItem
-            itemId="api-key-test-tab"
-            isActive={activeItem === 'api-key-test-tab'}
-            onClick={() => setActiveItem('api-key-test-tab')}
-          >
-            Test tab
-          </NavItem>
-        </NavExpandable>
+          API key approval
+        </NavItem>
       </NavList>
     </Nav>
   );
@@ -492,65 +436,35 @@ const App = () => {
           return (
             <APIDetailsPage
               apiName={selectedApiDetails}
-              onBack={() => setSelectedApiDetails(null)}
-              breadcrumbParent="API catalog"
+              onBack={() => {
+                setSelectedApiDetails(null);
+                setActiveItem('api-key-approvals');
+              }}
+              breadcrumbParent="API key approval"
               onRequestApiKey={openRequestApiKeyModal}
               apiKeysRows={credentialsList.filter((c) => c.api === selectedApiDetails)}
               onOpenDelete={(row) => setDeleteCredentialId(row.id)}
             />
           );
         }
-        return <PortalPage onApiNameClick={setSelectedApiDetails} />;
-      case 'api-access':
-        if (selectedApiKey) {
-        return (
-          <APIKeyDetailPage
-              credential={selectedApiKey}
-              onBack={() => setSelectedApiKey(null)}
-              revealedKeyIds={revealedKeyIds}
-              onOpenRevealModal={setRevealModalRowId}
-              onOpenEdit={(row) => setEditCredentialId(row.id)}
-              onOpenDelete={(row) => setDeleteCredentialId(row.id)}
-            />
-          );
-        }
-        return (
-          <APICredentialsPage
-            credentialsData={credentialsList}
-            onApiKeyNameClick={setSelectedApiKey}
-            revealedKeyIds={revealedKeyIds}
-            onOpenRevealModal={setRevealModalRowId}
-            onOpenEdit={(row) => setEditCredentialId(row.id)}
-            onOpenDelete={(row) => setDeleteCredentialId(row.id)}
-            onOpenRequestApiKey={openRequestApiKeyModal}
-            onNavigateToApiCatalog={navigateToApiCatalogDetail}
-          />
-        );
+        return <APIKeyApprovalsPage onNavigateToApiCatalog={navigateToApiCatalogDetail} />;
       case 'api-key-approvals':
         return <APIKeyApprovalsPage onNavigateToApiCatalog={navigateToApiCatalogDetail} />;
-      case 'api-key-test-tab':
-        return <APIKeyTestTabPage />;
       default:
-        return <PortalPage onApiNameClick={setSelectedApiDetails} />;
+        return <APIKeyApprovalsPage onNavigateToApiCatalog={navigateToApiCatalogDetail} />;
     }
   };
 
-  /* My API keys (list only) + API catalog product details (incl. API keys tab) */
   const showRequestKeySuccessToast = Boolean(
-    requestKeySuccessToast &&
-      ((activeItem === 'api-access' && !selectedApiKey) ||
-        (activeItem === 'internal-portals' && selectedApiDetails))
+    requestKeySuccessToast && activeItem === 'internal-portals' && selectedApiDetails
   );
 
-  /* My API keys (list or detail) + API catalog product details */
   const showEditKeySuccessToast = Boolean(
-    editKeySuccessToast &&
-      (activeItem === 'api-access' || (activeItem === 'internal-portals' && selectedApiDetails))
+    editKeySuccessToast && activeItem === 'internal-portals' && selectedApiDetails
   );
 
   const showDeleteKeySuccessToast = Boolean(
-    deleteKeySuccessToast &&
-      (activeItem === 'api-access' || (activeItem === 'internal-portals' && selectedApiDetails))
+    deleteKeySuccessToast && activeItem === 'internal-portals' && selectedApiDetails
   );
 
   return (
