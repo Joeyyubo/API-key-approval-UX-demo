@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   PageSection,
   Title,
@@ -18,33 +18,16 @@ import {
   ToolbarFilter,
   Label,
   Tooltip,
-  Alert,
-  AlertVariant,
-  AlertActionLink,
+  Popover,
   Flex
 } from '@patternfly/react-core';
-import {
-  Table,
-  Thead,
-  Tr,
-  Th,
-  Tbody,
-  Td,
-  ExpandableRowContent
-} from '@patternfly/react-table';
-import {
-  expandableRowContentStyleAfterExpandAndCheckbox,
-  expandedRowTdPaddingInline
-} from '../utils/expandableTableRowContentStyles';
+import { Table, Thead, Tr, Th, Tbody, Td, TableGridBreakpoint } from '@patternfly/react-table';
 import {
   FilterIcon,
   EllipsisVIcon,
   CheckCircleIcon,
   PendingIcon,
   ExclamationCircleIcon,
-  ExclamationTriangleIcon,
-  AngleRightIcon,
-  AngleDownIcon,
   CaretDownIcon
 } from '@patternfly/react-icons';
 import {
@@ -54,14 +37,58 @@ import {
   CREDENTIAL_TIER_OPTIONS,
   USE_CASE_EXPANDED_TEXT
 } from '../data/apiCredentialsModel';
-import {
-  TierSortableColumnHeader,
-  TIER_TABLE_COLUMN_STYLE
-} from './TierSortableColumnHeader';
-import { TruncatedTableLink, TruncatedTableText } from './ApiKeyNameText';
+import { TierSortableColumnHeader } from './TierSortableColumnHeader';
+import { TruncatedTableLink, TruncatedTableText, UseCaseTwoLineCell } from './ApiKeyNameText';
+import { ApproveApiKeyModal, RejectApiKeyModal } from './ApiKeyApprovalActionModals';
+import { BulkApproveApiKeysModal, BulkRejectApiKeysModal } from './BulkApiKeyApprovalModals';
+import ApiKeyApprovalResultToast from './ApiKeyApprovalResultToast';
+
+/** Wider than shared Tier min — approvals table uses fixed layout; header needs Tier + sort + help */
+const APPROVALS_TIER_COLUMN_MIN_WIDTH = '10.75rem';
+
+const APPROVALS_TIER_TH_TD_STYLE = {
+  minWidth: APPROVALS_TIER_COLUMN_MIN_WIDTH,
+  whiteSpace: 'nowrap',
+  verticalAlign: 'middle'
+};
+
+/** Tighten checkbox ↔ API: PF table cells use large default padding; col width alone does not remove it. */
+const APPROVALS_SELECT_COL_STYLE = {
+  verticalAlign: 'middle',
+  width: '1.25rem',
+  padding: 0,
+  paddingInlineStart: 'var(--pf-t--global--spacer--xs)',
+  paddingInlineEnd: 0
+};
+
+const APPROVALS_API_COL_STYLE = {
+  verticalAlign: 'middle',
+  paddingInlineStart: 'var(--pf-t--global--spacer--xs)'
+};
+
+const APPROVALS_USE_CASE_COL_STYLE = {
+  verticalAlign: 'middle',
+  color: 'var(--pf-t--global--text--color--subtle)',
+  overflow: 'hidden',
+  maxWidth: 0,
+  paddingInlineEnd: 'var(--pf-t--global--spacer--md)'
+};
+
+const APPROVALS_STATUS_COL_STYLE = {
+  verticalAlign: 'middle',
+  paddingInlineStart: 'var(--pf-t--global--spacer--md)'
+};
+
+/** Row actions (kebab): align to table trailing edge like My API keys (fixed layout can widen this cell). */
+const APPROVALS_ACTIONS_COL_STYLE = {
+  verticalAlign: 'middle',
+  textAlign: 'end',
+  whiteSpace: 'nowrap'
+};
 
 const STATUS_OPTIONS = ['Approved', 'Pending', 'Rejected'];
-const STATUS_RANK = { Active: 4, Pending: 3, Rejected: 2 };
+/** Status column sort: Pending → Approved (Active) → Rejected */
+const STATUS_RANK = { Pending: 1, Active: 2, Rejected: 3 };
 
 /** Data layer still uses `Active`; approvals UI shows “Approved”. */
 function approvalStatusLabel(status) {
@@ -90,14 +117,20 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
   const [statusFilters, setStatusFilters] = useState([]);
   const [tierFilters, setTierFilters] = useState([]);
   const [actionsOpenRowId, setActionsOpenRowId] = useState(null);
+  const [approveRow, setApproveRow] = useState(null);
+  const [rejectRow, setRejectRow] = useState(null);
+  const [bulkApproveRows, setBulkApproveRows] = useState(null);
+  const [bulkRejectRows, setBulkRejectRows] = useState(null);
   const [searchValue, setSearchValue] = useState('');
-  const [expandedRows, setExpandedRows] = useState({});
   const [selectedIds, setSelectedIds] = useState(() => new Set());
   const [sortState, setSortState] = useState({
-    index: 2,
+    index: 1,
     direction: 'asc',
     defaultDirection: 'asc'
   });
+  const [approvalToast, setApprovalToast] = useState(null);
+
+  const dismissApprovalToast = useCallback(() => setApprovalToast(null), []);
 
   const handleSort = (_event, index, direction) => {
     setSortState({ index, direction, defaultDirection: 'asc' });
@@ -120,20 +153,19 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
     );
   };
 
-  const toggleExpand = (id) => {
-    setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   const filteredCredentials = credentialsData.filter((row) => {
     const q = searchValue.trim().toLowerCase();
     const statusForSearch =
       row.status === 'Active' ? `${approvalStatusLabel(row.status)} active`.toLowerCase() : row.status.toLowerCase();
+    const useCaseText = (row.useCase || USE_CASE_EXPANDED_TEXT || '').toLowerCase();
+    const reasonText = (row.rejectionReason || '').toLowerCase();
     const matchesSearch =
       !q ||
-      row.name.toLowerCase().includes(q) ||
       row.api.toLowerCase().includes(q) ||
       row.owner.toLowerCase().includes(q) ||
-      statusForSearch.includes(q);
+      useCaseText.includes(q) ||
+      statusForSearch.includes(q) ||
+      reasonText.includes(q);
     const matchesStatus = rowMatchesApprovalStatusFilters(row.status, statusFilters);
     const matchesTier = tierFilters.length === 0 || tierFilters.includes(row.tier);
     return matchesSearch && matchesStatus && matchesTier;
@@ -146,9 +178,15 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
     list.sort((a, b) => {
       let cmp = 0;
       switch (index) {
-        case 2:
+        case 1:
           cmp = (a.api || '').localeCompare(b.api || '', undefined, { sensitivity: 'base' });
           break;
+        case 2: {
+          const ua = (a.useCase || USE_CASE_EXPANDED_TEXT) || '';
+          const ub = (b.useCase || USE_CASE_EXPANDED_TEXT) || '';
+          cmp = ua.localeCompare(ub, undefined, { sensitivity: 'base' });
+          break;
+        }
         case 3:
           cmp = (STATUS_RANK[a.status] ?? 0) - (STATUS_RANK[b.status] ?? 0);
           break;
@@ -212,34 +250,87 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
     return n;
   }, [selectedIds, credentialsData]);
 
-  const handleBulkApprove = () => {
+  const openBulkApproveModal = () => {
     if (selectedPendingCount === 0) return;
-    setCredentialsData((prev) =>
-      prev.map((r) => (selectedIds.has(r.id) && r.status === 'Pending' ? { ...r, status: 'Active' } : r))
-    );
-    setSelectedIds(new Set());
+    const rows = credentialsData.filter((r) => selectedIds.has(r.id) && r.status === 'Pending');
+    if (rows.length === 0) return;
+    setBulkApproveRows(rows);
   };
 
-  const handleBulkReject = () => {
+  const openBulkRejectModal = () => {
     if (selectedPendingCount === 0) return;
+    const rows = credentialsData.filter((r) => selectedIds.has(r.id) && r.status === 'Pending');
+    if (rows.length === 0) return;
+    setBulkRejectRows(rows);
+  };
+
+  const handleBulkApproveByIds = (ids) => {
+    const idSet = new Set(ids);
     setCredentialsData((prev) =>
-      prev.map((r) => (selectedIds.has(r.id) && r.status === 'Pending' ? { ...r, status: 'Rejected' } : r))
+      prev.map((r) =>
+        idSet.has(r.id) && r.status === 'Pending'
+          ? { ...r, status: 'Active', rejectionReason: undefined }
+          : r
+      )
     );
-    setSelectedIds(new Set());
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      idSet.forEach((id) => next.delete(id));
+      return next;
+    });
+    if (ids.length > 0) {
+      setApprovalToast({ kind: 'approve', count: ids.length });
+    }
+  };
+
+  const handleBulkRejectByIds = (ids, reason) => {
+    const idSet = new Set(ids);
+    setCredentialsData((prev) =>
+      prev.map((r) =>
+        idSet.has(r.id) && r.status === 'Pending' ? { ...r, status: 'Rejected', rejectionReason: reason } : r
+      )
+    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      idSet.forEach((id) => next.delete(id));
+      return next;
+    });
+    if (ids.length > 0) {
+      setApprovalToast({ kind: 'reject', count: ids.length });
+    }
+  };
+
+  const handleApproveFromModal = (row) => {
+    setCredentialsData((prev) =>
+      prev.map((r) =>
+        r.id === row.id ? { ...r, status: 'Active', rejectionReason: undefined } : r
+      )
+    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(row.id);
+      return next;
+    });
+    setApprovalToast({ kind: 'approve', count: 1, api: row.api, requester: row.owner });
+  };
+
+  const handleRejectFromModal = (row, reason) => {
+    setCredentialsData((prev) =>
+      prev.map((r) => (r.id === row.id ? { ...r, status: 'Rejected', rejectionReason: reason } : r))
+    );
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.delete(row.id);
+      return next;
+    });
+    setApprovalToast({ kind: 'reject', count: 1, api: row.api, requester: row.owner });
   };
 
   const renderStatus = (status) => {
     const isActive = status === 'Active';
     const isPending = status === 'Pending';
-    const isRejected = status === 'Rejected';
-    const iconStatus = isActive ? 'success' : isPending ? 'info' : isRejected ? 'warning' : 'danger';
-    const StatusIcon = isActive
-      ? CheckCircleIcon
-      : isPending
-        ? PendingIcon
-        : isRejected
-          ? ExclamationTriangleIcon
-          : ExclamationCircleIcon;
+    const iconStatus = isActive ? 'success' : isPending ? 'info' : 'danger';
+    const StatusIcon = isActive ? CheckCircleIcon : isPending ? PendingIcon : ExclamationCircleIcon;
     return (
       <span
         style={{
@@ -255,6 +346,62 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           {approvalStatusLabel(status)}
         </span>
       </span>
+    );
+  };
+
+  const renderStatusCell = (row) => {
+    if (row.status !== 'Rejected') {
+      return renderStatus(row.status);
+    }
+    const reason =
+      row.rejectionReason || 'No additional details were provided for this rejection.';
+    return (
+      <Popover
+        aria-label={`Rejection reason for ${row.api}`}
+        headerContent="Rejection reason"
+        showClose
+        closeBtnAriaLabel="Close"
+        position="right"
+        bodyContent={
+          <p
+            style={{
+              margin: 0,
+              color: 'var(--pf-t--global--text--color--regular)',
+              whiteSpace: 'normal',
+              wordBreak: 'break-word'
+            }}
+          >
+            {reason}
+          </p>
+        }
+      >
+        <Button
+          variant="plain"
+          aria-label={`Rejected — open rejection reason for request: ${row.api}`}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            height: 'auto',
+            padding: 0,
+            textAlign: 'start'
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--pf-t--global--spacer--sm)'
+            }}
+          >
+            <Icon size="sm" status="danger" style={{ flexShrink: 0 }}>
+              <ExclamationCircleIcon />
+            </Icon>
+            <span style={{ color: 'var(--pf-t--global--text--color--link--default)' }}>
+              {approvalStatusLabel(row.status)}
+            </span>
+          </span>
+        </Button>
+      </Popover>
     );
   };
 
@@ -307,7 +454,7 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
         .toolbar-api-approvals .pf-v6-c-label-group .pf-v6-c-label.pf-m-outline .pf-v6-c-label__actions .pf-v6-c-button {
           --pf-v6-c-button__icon--Color: var(--pf-t--global--icon--color--regular);
         }
-        /* Bulk select: outer frame matches Status/Tier filter MenuToggle (rounded rect, not pill) */
+        /* Bulk select: same visual height as Status/Tier MenuToggle; no inner vertical rules */
         .approvals-bulk-select-frame {
           display: inline-flex;
           align-items: center;
@@ -316,7 +463,8 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           border-radius: var(--pf-t--global--border--radius--small);
           background-color: var(--pf-t--global--background--color--primary--default);
           overflow: hidden;
-          padding-block: var(--pf-t--global--spacer--xs);
+          padding-block: 0;
+          min-height: var(--pf-v6-c-menu-toggle--MinHeight, 2.25rem);
         }
         .approvals-bulk-select-frame .approvals-bulk-select-checkbox-wrap {
           display: inline-flex;
@@ -326,13 +474,18 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           padding-inline-end: var(--pf-t--global--spacer--xs);
           padding-block: 0;
         }
+        .approvals-bulk-select-frame .pf-v6-c-check {
+          display: flex;
+          align-items: center;
+          margin-block: 0;
+        }
         .approvals-bulk-select-frame .approvals-bulk-select-caret-toggle.pf-v6-c-menu-toggle {
           --pf-v6-c-menu-toggle--BorderRadius: 0;
           --pf-v6-c-menu-toggle--before--BorderWidth: 0;
           --pf-v6-c-menu-toggle--BackgroundColor: transparent;
-          align-self: center;
-          border-inline-start: var(--pf-t--global--border--width--regular) solid
-            var(--pf-t--global--border--color--default);
+          align-self: stretch;
+          border-inline-start: none;
+          min-height: 0;
         }
         .approvals-bulk-select-frame .approvals-bulk-select-caret-toggle.pf-v6-c-menu-toggle:hover:not(:disabled) {
           --pf-v6-c-menu-toggle--hover--BackgroundColor: var(--pf-t--global--color--nonstatus--gray--hover);
@@ -343,8 +496,7 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           justify-content: center;
           padding-inline: var(--pf-t--global--spacer--sm);
           padding-block: 0;
-          border-inline-start: var(--pf-t--global--border--width--regular) solid
-            var(--pf-t--global--border--color--default);
+          border-inline-start: none;
         }
         .approvals-toolbar-bulk-actions-wrap {
           display: flex;
@@ -359,6 +511,15 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           width: 1px;
           height: var(--pf-t--global--spacer--xl);
           background-color: var(--pf-t--global--border--color--default);
+        }
+        /* Pull checkbox column and API column together (override PF cell padding). */
+        .approvals-key-table th:first-child,
+        .approvals-key-table td:first-child {
+          padding-inline-end: 0 !important;
+        }
+        .approvals-key-table th:nth-child(2),
+        .approvals-key-table td:nth-child(2) {
+          padding-inline-start: var(--pf-t--global--spacer--xs) !important;
         }
       `}</style>
       <PageSection variant="light">
@@ -400,7 +561,7 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
             color: 'var(--pf-t--global--text--color--subtle)'
           }}
         >
-          Manage keys issued to requesters for accessing APIs.
+          Review and approve API key requests
         </p>
 
         <Toolbar
@@ -450,7 +611,7 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
                   >
                     <DropdownList>
                       <DropdownItem key="all" onClick={() => toggleSelectAllVisible(true)}>
-                        Select all pending on page
+                        Select all pending
                       </DropdownItem>
                       <DropdownItem key="none" onClick={clearSelection}>
                         Select none
@@ -541,7 +702,7 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
               </ToolbarFilter>
               <ToolbarItem>
                 <SearchInput
-                  placeholder="Find by API or requester"
+                  placeholder="Find by API, requester, or use case"
                   value={searchValue}
                   onChange={(_, value) => setSearchValue(value)}
                   onClear={() => setSearchValue('')}
@@ -555,14 +716,14 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
                     <Button
                       variant="primary"
                       style={bulkActionButtonStyle}
-                      onClick={handleBulkApprove}
+                      onClick={openBulkApproveModal}
                     >
                       {`Approve ${selectedPendingCount} selected`}
                     </Button>
                     <Button
                       variant="danger"
                       style={bulkActionButtonStyle}
-                      onClick={handleBulkReject}
+                      onClick={openBulkRejectModal}
                     >
                       {`Reject ${selectedPendingCount} selected`}
                     </Button>
@@ -573,55 +734,74 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
           </ToolbarContent>
         </Toolbar>
 
-        <div style={{ marginTop: 'var(--pf-t--global--spacer--sm)' }}>
-          <Table aria-label="API key approval table">
+        <div
+          style={{
+            marginTop: 'var(--pf-t--global--spacer--sm)',
+            overflowX: 'auto',
+            maxWidth: '100%'
+          }}
+        >
+          <Table
+            className="approvals-key-table"
+            aria-label="API key approval table"
+            gridBreakPoint={TableGridBreakpoint.none}
+            style={{
+              tableLayout: 'fixed',
+              width: '100%',
+              minWidth: '56rem'
+            }}
+          >
+            <colgroup>
+              <col style={{ width: '1.25rem' }} />
+              <col style={{ width: '11%' }} />
+              <col style={{ width: '19%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '3rem' }} />
+            </colgroup>
           <Thead>
             <Tr>
+              <Th screenReaderText="Row selection" style={APPROVALS_SELECT_COL_STYLE} />
+              <Th sort={{ columnIndex: 1, sortBy: sortState, onSort: handleSort }} style={APPROVALS_API_COL_STYLE}>
+                API
+              </Th>
               <Th
-                style={{
-                  width: 'var(--pf-t--global--spacer--2xl)',
-                  paddingLeft: 'var(--pf-t--global--spacer--sm)',
-                  paddingRight: 'var(--pf-t--global--spacer--xs)'
-                }}
-              />
-              <Th screenReaderText="Row selection" />
-              <Th sort={{ columnIndex: 2, sortBy: sortState, onSort: handleSort }}>API</Th>
-              <Th sort={{ columnIndex: 3, sortBy: sortState, onSort: handleSort }}>Status</Th>
-              <Th dataLabel="Tier" style={TIER_TABLE_COLUMN_STYLE}>
+                sort={{ columnIndex: 2, sortBy: sortState, onSort: handleSort }}
+                style={{ paddingInlineEnd: 'var(--pf-t--global--spacer--md)' }}
+              >
+                Use case
+              </Th>
+              <Th
+                sort={{ columnIndex: 3, sortBy: sortState, onSort: handleSort }}
+                style={{ paddingInlineStart: 'var(--pf-t--global--spacer--md)' }}
+              >
+                Status
+              </Th>
+              <Th dataLabel="Tier" style={APPROVALS_TIER_TH_TD_STYLE}>
                 <TierSortableColumnHeader columnIndex={4} sortBy={sortState} onSort={handleSort} />
               </Th>
-              <Th sort={{ columnIndex: 5, sortBy: sortState, onSort: handleSort }}>Requester</Th>
-              <Th sort={{ columnIndex: 6, sortBy: sortState, onSort: handleSort }}>Requested time</Th>
-              <Th />
+              <Th
+                sort={{ columnIndex: 5, sortBy: sortState, onSort: handleSort }}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Requester
+              </Th>
+              <Th
+                sort={{ columnIndex: 6, sortBy: sortState, onSort: handleSort }}
+                style={{ whiteSpace: 'nowrap' }}
+              >
+                Requested time
+              </Th>
+              <Th screenReaderText="Row actions" style={APPROVALS_ACTIONS_COL_STYLE} />
             </Tr>
           </Thead>
           <Tbody>
             {sortedCredentials.map((row) => (
               <React.Fragment key={row.id}>
-                <Tr style={expandedRows[row.id] ? { borderBottom: 'none' } : undefined}>
-                  <Td
-                    style={{
-                      width: 'var(--pf-t--global--spacer--2xl)',
-                      paddingLeft: 'var(--pf-t--global--spacer--sm)',
-                      paddingRight: 'var(--pf-t--global--spacer--xs)',
-                      verticalAlign: 'middle'
-                    }}
-                  >
-                    <Button
-                      variant="plain"
-                      aria-label={expandedRows[row.id] ? 'Collapse' : 'Expand'}
-                      onClick={() => toggleExpand(row.id)}
-                      style={{ display: 'inline-flex', alignItems: 'center' }}
-                    >
-                      {expandedRows[row.id] ? <AngleDownIcon /> : <AngleRightIcon />}
-                    </Button>
-                  </Td>
-                  <Td
-                    style={{
-                      verticalAlign: 'middle',
-                      width: 'var(--pf-t--global--spacer--2xl)'
-                    }}
-                  >
+                <Tr>
+                  <Td style={APPROVALS_SELECT_COL_STYLE}>
                     <Checkbox
                       id={`approvals-row-${row.id}`}
                       isChecked={row.status === 'Pending' && selectedIds.has(row.id)}
@@ -629,12 +809,12 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
                       onChange={(_e, checked) => toggleRowSelected(row.id, checked, row.status)}
                       aria-label={
                         row.status === 'Pending'
-                          ? `Select ${row.name}`
-                          : `Cannot select ${row.name} (${approvalStatusLabel(row.status)} keys are not selectable)`
+                          ? `Select request for ${row.api} (${row.owner})`
+                          : `Cannot select request for ${row.api} (${approvalStatusLabel(row.status)} keys are not selectable)`
                       }
                     />
                   </Td>
-                  <Td style={{ verticalAlign: 'middle' }}>
+                  <Td style={APPROVALS_API_COL_STYLE}>
                     <TruncatedTableLink
                       text={row.api}
                       href="#"
@@ -644,8 +824,11 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
                       }}
                     />
                   </Td>
-                  <Td style={{ verticalAlign: 'middle' }}>{renderStatus(row.status)}</Td>
-                  <Td style={{ verticalAlign: 'middle', ...TIER_TABLE_COLUMN_STYLE }}>
+                  <Td style={APPROVALS_USE_CASE_COL_STYLE}>
+                    <UseCaseTwoLineCell text={row.useCase || USE_CASE_EXPANDED_TEXT} />
+                  </Td>
+                  <Td style={APPROVALS_STATUS_COL_STYLE}>{renderStatusCell(row)}</Td>
+                  <Td style={APPROVALS_TIER_TH_TD_STYLE}>
                     <Tooltip content={TIER_TOOLTIPS[row.tier] || `${row.tier} tier`}>
                       <span style={{ display: 'inline-flex', alignItems: 'center' }}>
                         <Label variant="outline" isCompact>
@@ -658,105 +841,93 @@ const APIKeyApprovalsPage = ({ onNavigateToApiCatalog }) => {
                     <TruncatedTableText text={row.owner} />
                   </Td>
                   <Td style={{ verticalAlign: 'middle' }}>{row.requestedTime}</Td>
-                  <Td style={{ verticalAlign: 'middle' }}>
-                    <Dropdown
-                      isOpen={actionsOpenRowId === row.id}
-                      onOpenChange={(open) => setActionsOpenRowId(open ? row.id : null)}
-                      onSelect={() => setActionsOpenRowId(null)}
-                      toggle={(toggleRef) => (
-                        <MenuToggle
-                          ref={toggleRef}
-                          aria-label="Actions"
-                          variant="plain"
-                          onClick={() =>
-                            setActionsOpenRowId(actionsOpenRowId === row.id ? null : row.id)
-                          }
-                          style={{ display: 'inline-flex', alignItems: 'center' }}
-                        >
-                          <EllipsisVIcon />
-                        </MenuToggle>
-                      )}
-                    >
-                      <DropdownList>
-                        <DropdownItem key="view">View details</DropdownItem>
-                        <DropdownItem key="approve">Approve</DropdownItem>
-                        <DropdownItem key="reject">Reject</DropdownItem>
-                        <DropdownItem key="edit">Edit</DropdownItem>
-                      </DropdownList>
-                    </Dropdown>
+                  <Td style={APPROVALS_ACTIONS_COL_STYLE}>
+                    {row.status === 'Pending' ? (
+                      <Dropdown
+                        isOpen={actionsOpenRowId === row.id}
+                        onOpenChange={(open) => setActionsOpenRowId(open ? row.id : null)}
+                        onSelect={() => setActionsOpenRowId(null)}
+                        toggle={(toggleRef) => (
+                          <MenuToggle
+                            ref={toggleRef}
+                            aria-label="Actions"
+                            variant="plain"
+                            onClick={() =>
+                              setActionsOpenRowId(actionsOpenRowId === row.id ? null : row.id)
+                            }
+                            style={{ display: 'inline-flex', alignItems: 'center' }}
+                          >
+                            <EllipsisVIcon />
+                          </MenuToggle>
+                        )}
+                      >
+                        <DropdownList>
+                          <DropdownItem
+                            key="approve"
+                            onClick={() => {
+                              setApproveRow(row);
+                              setActionsOpenRowId(null);
+                            }}
+                          >
+                            Approve
+                          </DropdownItem>
+                          <DropdownItem
+                            key="reject"
+                            onClick={() => {
+                              setRejectRow(row);
+                              setActionsOpenRowId(null);
+                            }}
+                          >
+                            Reject
+                          </DropdownItem>
+                        </DropdownList>
+                      </Dropdown>
+                    ) : null}
                   </Td>
                 </Tr>
-                {expandedRows[row.id] && (
-                  <Tr isExpanded style={{ borderTop: 'none' }}>
-                    <Td
-                      colSpan={8}
-                      style={{
-                        borderTop: 'none',
-                        paddingTop: 0,
-                        paddingBottom: 'var(--pf-t--global--spacer--md)',
-                        verticalAlign: 'top',
-                        boxShadow: 'none',
-                        ...expandedRowTdPaddingInline
-                      }}
-                    >
-                      <ExpandableRowContent style={expandableRowContentStyleAfterExpandAndCheckbox}>
-                        <div
-                          style={{
-                            fontWeight: 'var(--pf-t--global--font--weight--body--bold)',
-                            marginBottom: 'var(--pf-t--global--spacer--sm)'
-                          }}
-                        >
-                          API key name
-                        </div>
-                        <div
-                          style={{
-                            marginBottom: 'var(--pf-t--global--spacer--md)',
-                            color: 'var(--pf-t--global--text--color--regular)'
-                          }}
-                        >
-                          {row.name}
-                        </div>
-                        <div
-                          style={{
-                            fontWeight: 'var(--pf-t--global--font--weight--body--bold)',
-                            marginBottom: 'var(--pf-t--global--spacer--sm)'
-                          }}
-                        >
-                          Use case
-                        </div>
-                        <div style={{ color: 'var(--pf-t--global--text--color--subtle)' }}>
-                          {row.useCase || USE_CASE_EXPANDED_TEXT}
-                        </div>
-                        {row.status === 'Rejected' && (
-                          <Alert
-                            variant={AlertVariant.warning}
-                            isInline
-                            title={
-                              <>
-                                <strong>Rejection reason: </strong>
-                                {row.rejectionReason ||
-                                  'No additional details were provided for this rejection.'}
-                              </>
-                            }
-                            component="div"
-                            actionLinks={
-                              <AlertActionLink href="#" onClick={(e) => e.preventDefault()}>
-                                Request a new API key
-                              </AlertActionLink>
-                            }
-                            style={{ marginTop: 'var(--pf-t--global--spacer--md)' }}
-                          />
-                        )}
-                      </ExpandableRowContent>
-                    </Td>
-                  </Tr>
-                )}
               </React.Fragment>
             ))}
           </Tbody>
         </Table>
         </div>
       </PageSection>
+      <ApproveApiKeyModal
+        isOpen={Boolean(approveRow)}
+        onClose={() => setApproveRow(null)}
+        row={approveRow}
+        onApprove={handleApproveFromModal}
+      />
+      <RejectApiKeyModal
+        isOpen={Boolean(rejectRow)}
+        onClose={() => setRejectRow(null)}
+        row={rejectRow}
+        onReject={handleRejectFromModal}
+      />
+      {bulkApproveRows ? (
+        <BulkApproveApiKeysModal
+          onClose={() => setBulkApproveRows(null)}
+          initialRows={bulkApproveRows}
+          onConfirm={handleBulkApproveByIds}
+          onNavigateToApiCatalog={onNavigateToApiCatalog}
+        />
+      ) : null}
+      {bulkRejectRows ? (
+        <BulkRejectApiKeysModal
+          onClose={() => setBulkRejectRows(null)}
+          initialRows={bulkRejectRows}
+          onConfirm={handleBulkRejectByIds}
+          onNavigateToApiCatalog={onNavigateToApiCatalog}
+        />
+      ) : null}
+      {approvalToast ? (
+        <ApiKeyApprovalResultToast
+          kind={approvalToast.kind}
+          count={approvalToast.count}
+          api={approvalToast.api}
+          requester={approvalToast.requester}
+          onClose={dismissApprovalToast}
+        />
+      ) : null}
     </>
   );
 };

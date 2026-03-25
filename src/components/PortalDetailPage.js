@@ -73,7 +73,7 @@ const PortalDetailPage = ({ portalName, onBack }) => {
             isLink
             style={{ color: '#0066cc', cursor: 'pointer', textDecoration: 'underline' }}
           >
-            API catalog
+            APIs
           </BreadcrumbItem>
           <BreadcrumbItem isActive>{portalName}</BreadcrumbItem>
         </Breadcrumb>
